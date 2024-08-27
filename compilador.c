@@ -3,8 +3,45 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+
+typedef struct {
+    char lexema[50];
+    char simbolo[50];  // Supondo que o valor máximo de um token seja 50 caracteres
+} Token;
+
+
+typedef struct Node {
+    Token token;
+    struct Node* proximo;
+} Node;
+
+
+Node* criarNovoNo(const char* lexema, const char* simbolo) {
+    Node* novoNo = (Node*)malloc(sizeof(Node));
+    strcpy(novoNo->token.lexema, lexema);
+    strcpy(novoNo->token.simbolo, simbolo);
+    novoNo->proximo = NULL;
+    return novoNo;
+}
+
+
+void adicionarNo(Node** cabeca, const char* lexema, const char* simbolo) {
+    Node* novoNo = criarNovoNo(lexema, simbolo);
+    if (*cabeca == NULL) {
+        *cabeca = novoNo;
+    } else {
+        Node* temp = *cabeca;
+        while (temp->proximo != NULL) {
+            temp = temp->proximo;
+        }
+        temp->proximo = novoNo;
+    }
+}
+
+
 int main(){
     FILE *fptr;
+    Node* listaTokens = NULL;
 
     char ch;
 
@@ -68,5 +105,17 @@ int main(){
 
     // FECHA O ARQUIVO
     fclose(fptr);
+
+
+    adicionarNo(&listaTokens, "teste1", "PONTUACAO");
+    adicionarNo(&listaTokens, "teste2", "DIGITO");
+    adicionarNo(&listaTokens, "teste3", "LETRA");
+
+    // Imprime os tokens armazenados
+    Node* temp = listaTokens;
+    while(temp != NULL) {
+        printf("\nLexema: %s, Simbolo: %s\n", temp->token.lexema, temp->token.simbolo);
+        temp = temp->proximo;
+    }
     return 0;
 }
