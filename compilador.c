@@ -172,27 +172,26 @@ int main(){
         //TRATA OPERADOR ARITMETICO
         else if (ch == '+' || ch == '-' || ch == '*'){
             printf("\nOPERADOR ARITMETICO: -%c-", ch);
-            char sim[7];
-            char lex[5];
+            char simbolo_arit[7];
+            char lexema_arit[5];
 
-            lex[0] = ch;
-            lex[1] = '\0';
+            lexema_arit[0] = ch;
 
             switch(ch){
 
                 case '+':
-                    strcpy(sim, "smais");
-                    adicionarNo(&listaTokens, lex, sim);
+                    strcpy(simbolo_arit, "smais");
+                    adicionarNo(&listaTokens, lexema_arit, simbolo_arit);
                     break;
 
                 case '-':
-                    strcpy(sim, "smenos");
-                    adicionarNo(&listaTokens, lex, sim);
+                    strcpy(simbolo_arit, "smenos");
+                    adicionarNo(&listaTokens, lexema_arit, simbolo_arit);
                     break;
 
                 case '*':
-                    strcpy(sim, "smult");
-                    adicionarNo(&listaTokens, lex, sim);
+                    strcpy(simbolo_arit, "smult");
+                    adicionarNo(&listaTokens, lexema_arit, simbolo_arit);
                     break;
 
                 default:
@@ -204,6 +203,58 @@ int main(){
         //TRATA OPERADOR RELACIONAL
         else if (ch == '!' || ch == '<' || ch == '>' || ch == '='){
             printf("\nOPERADOR RELACIONAL: -%c-", ch);
+            //!=, <, <=, >, >=, =
+            char simbolo_opr[10];
+            char lexema_opr[5];
+            char temp_next_char;
+
+            lexema_opr[0] = ch;
+
+            switch(ch){
+
+                case '!':
+                    temp_next_char = fgetc(fptr);
+                    if(temp_next_char == '='){
+                        strcpy(simbolo_opr, "sdif");
+                        lexema_opr[1] = '=';
+                        adicionarNo(&listaTokens, lexema_opr, simbolo_opr);
+                    }
+                    break;
+
+                case '<':
+                    temp_next_char = fgetc(fptr);
+                    if(temp_next_char == '='){
+                        strcpy(simbolo_opr, "smenorig");
+                        lexema_opr[1] = '=';
+                        adicionarNo(&listaTokens, lexema_opr, simbolo_opr);
+                    } else {
+                        strcpy(simbolo_opr, "smenor");
+                        adicionarNo(&listaTokens, lexema_opr, simbolo_opr);
+                    }
+                    break;
+
+                case '>':
+                    temp_next_char = fgetc(fptr);
+                    if(temp_next_char == '='){
+                        strcpy(simbolo_opr, "smaiorig");
+                        lexema_opr[1] = '=';
+                        adicionarNo(&listaTokens, lexema_opr, simbolo_opr);
+                    } else {
+                        strcpy(simbolo_opr, "smaior");
+                        adicionarNo(&listaTokens, lexema_opr, simbolo_opr);
+                    }
+                    break;
+
+                case '=':
+                    strcpy(simbolo_opr, "sig");
+                    lexema_opr[1] = '\0';
+                    adicionarNo(&listaTokens, lexema_opr, simbolo_opr);
+                    break;
+
+                default:
+                    printf("\n\nERRO NA LEITURA DOS OPERADORES RELACIONAIS");
+            }
+
         }
         //TRATA PONTUACAO
         else if (ch == ';' || ch == ',' || ch == '(' || ch == ')' || ch == '.'){
