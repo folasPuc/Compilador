@@ -259,6 +259,40 @@ int main(){
         //TRATA PONTUACAO
         else if (ch == ';' || ch == ',' || ch == '(' || ch == ')' || ch == '.'){
             printf("\nPONTUACAO: -%c-", ch);
+
+            char simbolo_pont[20];
+            char lexema_pont[5];
+
+            lexema_pont[0] = ch;
+
+            switch(ch){
+
+                case ';':
+                    strcpy(simbolo_pont, "sponto_virgula");
+                    adicionarNo(&listaTokens, lexema_pont, simbolo_pont);
+                    break;
+
+                case ',':
+                    strcpy(simbolo_pont, "svirgula");
+                    adicionarNo(&listaTokens, lexema_pont, simbolo_pont);
+                    break;
+
+                case '(':
+                    strcpy(simbolo_pont, "sabre_parenteses");
+                    adicionarNo(&listaTokens, lexema_pont, simbolo_pont);
+                    break;
+
+                case ')':
+                    strcpy(simbolo_pont, "sfecha_parenteses");
+                    adicionarNo(&listaTokens, lexema_pont, simbolo_pont);
+                    break;
+
+                case '.':
+                    strcpy(simbolo_pont, "sponto");
+                    adicionarNo(&listaTokens, lexema_pont, simbolo_pont);
+                    break;
+            }
+
         }
         //ERRO
         else {
