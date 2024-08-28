@@ -167,19 +167,47 @@ int main(){
         }
         //TRATA ATRIBUICAO
         else if (ch == ':'){
-            printf("ATRIBUICAO: -%c-", ch);
+            printf("\nATRIBUICAO: -%c-", ch);
         }
         //TRATA OPERADOR ARITMETICO
         else if (ch == '+' || ch == '-' || ch == '*'){
-            printf("OPERADOR ARITMETICO: -%c-", ch);
+            printf("\nOPERADOR ARITMETICO: -%c-", ch);
+            char sim[7];
+            char lex[5];
+
+            lex[0] = ch;
+            lex[1] = '\0';
+
+            switch(ch){
+
+                case '+':
+                    strcpy(sim, "smais");
+                    adicionarNo(&listaTokens, lex, sim);
+                    break;
+
+                case '-':
+                    strcpy(sim, "smenos");
+                    adicionarNo(&listaTokens, lex, sim);
+                    break;
+
+                case '*':
+                    strcpy(sim, "smult");
+                    adicionarNo(&listaTokens, lex, sim);
+                    break;
+
+                default:
+                    printf("\n\nERRO AO ATRIBUIR SIMBOLO");
+                    break;
+            }
+
         }
         //TRATA OPERADOR RELACIONAL
         else if (ch == '!' || ch == '<' || ch == '>' || ch == '='){
-            printf("OPERADOR RELACIONAL: -%c-", ch);
+            printf("\nOPERADOR RELACIONAL: -%c-", ch);
         }
         //TRATA PONTUACAO
         else if (ch == ';' || ch == ',' || ch == '(' || ch == ')' || ch == '.'){
-            printf("PONTUACAO: -%c-", ch);
+            printf("\nPONTUACAO: -%c-", ch);
         }
         //ERRO
         else {
