@@ -82,15 +82,15 @@ int main(){
             char simbolo[50];
             char lexema[50];
             int counter = 0;
-            while(isdigit(ch) || isalpha(ch) || ch == '_' && counter < 50){
+            while(isdigit(ch) || isalpha(ch) || ch == '_' && counter < 50){ // concatena no buffer e le caractere enquanto ch é digitou, numero ou _
                 printf("%c", ch);
-                buffer[counter++] = ch;
+                buffer[counter++] = ch; //concatena no buffer
                 ch = fgetc(fptr);
             }
             printf("[%c]", ch);
-            buffer[counter] = '\0'; // Termina a string com o caractere nulo
-            strcpy(lexema, buffer);
+            strcpy(lexema, buffer); //copia o conteudo do buffer para o lexema
 
+            //faz a comparacao para ver se e uma palavra reservada e atribui o símbolo específico
 
             if (strcmp(buffer, "programa") == 0){
                 strcpy(simbolo, "sprograma");
@@ -159,15 +159,38 @@ int main(){
                 strcpy(simbolo, "sidentificador");
             }
 
-            adicionarNo(&listaTokens, lexema, simbolo);
+            adicionarNo(&listaTokens, lexema, simbolo); //chama a funcao para adicionar um novo token na lista de tokens
 
-            ungetc(ch, fptr); // Devolve o caractere lido que não pertence ao identificador
+            ungetc(ch, fptr); //ungetc para o proximo caractere nao ser pulado no loop principal
 
 
         }
         //TRATA ATRIBUICAO
         else if (ch == ':'){
             printf("ATRIBUICAO: -%c-", ch);
+            char buffer[50] = {0};
+            char simbolo[50];
+            char lexema[50];
+            int counter = 0;
+
+            buffer[counter] = ch; //coloca o = na primeira posicao do buffer
+            ch = fgetc(fptr); //le mais um caractere para ver se encontra o =
+
+            if (ch == '='){ //encontrou o =, concatenar o montar o token
+                buffer[++counter] = ch;
+                strcpy(lexema, buffer); //copia o conteudo do buffer para o lexema
+                strcpy(simbolo, "satribuicao"); //copia "satribuicao" para o simbolo
+                adicionarNo(&listaTokens, lexema, simbolo); //faz a chamada para adicionar um novo token na lista de tokens
+            }
+            else { //nao achou o =, montar o token somente
+                strcpy(lexema, buffer); //copia o conteudo do buffer para o lexema
+                strcpy(simbolo, "sdoispontos"); //copia "sdoispontos" para o simbolo
+                adicionarNo(&listaTokens, lexema, simbolo); //faz a chamada para adicionar um novo token na lista de tokens
+
+                 ungetc(ch, fptr); //ungetc para o proximo caractere nao ser pulado no loop principal
+            }
+
+
         }
         //TRATA OPERADOR ARITMETICO
         else if (ch == '+' || ch == '-' || ch == '*'){
