@@ -218,6 +218,9 @@ int main(){
                         strcpy(simbolo_opr, "sdif");
                         lexema_opr[1] = '=';
                         adicionarNo(&listaTokens, lexema_opr, simbolo_opr);
+                    } else {
+                        ungetc(temp_next_char, fptr);
+                        printf("\n\nTOKEN INVALIDO");
                     }
                     break;
 
