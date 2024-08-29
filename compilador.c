@@ -173,7 +173,7 @@ int main(){
         else if (ch == '+' || ch == '-' || ch == '*'){
             printf("\nOPERADOR ARITMETICO: -%c-", ch);
             char simbolo_arit[7];
-            char lexema_arit[5];
+            char lexema_arit[5] = {0};
 
             lexema_arit[0] = ch;
 
@@ -205,7 +205,7 @@ int main(){
             printf("\nOPERADOR RELACIONAL: -%c-", ch);
             //!=, <, <=, >, >=, =
             char simbolo_opr[10];
-            char lexema_opr[5];
+            char lexema_opr[5] = {0};
             char temp_next_char;
 
             lexema_opr[0] = ch;
@@ -230,6 +230,7 @@ int main(){
                     } else {
                         strcpy(simbolo_opr, "smenor");
                         adicionarNo(&listaTokens, lexema_opr, simbolo_opr);
+                        ungetc(temp_next_char, fptr);
                     }
                     break;
 
@@ -242,6 +243,7 @@ int main(){
                     } else {
                         strcpy(simbolo_opr, "smaior");
                         adicionarNo(&listaTokens, lexema_opr, simbolo_opr);
+                        ungetc(temp_next_char, fptr);
                     }
                     break;
 
@@ -261,7 +263,7 @@ int main(){
             printf("\nPONTUACAO: -%c-", ch);
 
             char simbolo_pont[20];
-            char lexema_pont[5];
+            char lexema_pont[5] = {0};
 
             lexema_pont[0] = ch;
 
