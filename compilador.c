@@ -54,9 +54,9 @@ int main(){
     }
 
     printf("Conteudo do arquivo: \n");
-
+    ch = fgetc(fptr);
     //Loop principal, caractere por caractere
-    while ((ch = fgetc(fptr)) != EOF) {
+    while (ch != EOF) {
         //Descarta comentários '{}' e espaço
         while(ch == '{' || (isspace(ch) && ch != EOF)){
             if(ch == '{'){
@@ -75,6 +75,7 @@ int main(){
         //TRATA DIGITO
         if (isdigit(ch)){
             printf("%c", ch);
+            ch = fgetc(fptr);
         }
         //LETRA - TRATA IDENTIFICADOR E PALAVRA RESERVADA
         else if (isalpha(ch)){
@@ -161,14 +162,35 @@ int main(){
 
             adicionarNo(&listaTokens, lexema, simbolo);
 
-            ungetc(ch, fptr); // Devolve o caractere lido que não pertence ao identificador
-
-
         }
         //TRATA ATRIBUICAO
         else if (ch == ':'){
-            printf("\nATRIBUICAO: -%c-", ch);
+            printf("ATRIBUICAO: -%c-", ch);
+            char buffer[50] = {0};
+            char simbolo[50];
+            char lexema[50];
+            int counter = 0;
+
+            buffer[counter] = ch; //coloca o = na primeira posicao do buffer
+            ch = fgetc(fptr); //le mais um caractere para ver se encontra o =
+
+            if (ch == '='){ //encontrou o =, concatenar o montar o token
+                buffer[++counter] = ch;
+                strcpy(lexema, buffer); //copia o conteudo do buffer para o lexema
+                strcpy(simbolo, "satribuicao"); //copia "satribuicao" para o simbolo
+                adicionarNo(&listaTokens, lexema, simbolo); //faz a chamada para adicionar um novo token na lista de tokens
+                ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
+            }
+            else { //nao achou o =, montar o token somente
+                strcpy(lexema, buffer); //copia o conteudo do buffer para o lexema
+                strcpy(simbolo, "sdoispontos"); //copia "sdoispontos" para o simbolo
+                adicionarNo(&listaTokens, lexema, simbolo); //faz a chamada para adicionar um novo token na lista de tokens
+
+            }
+
+
         }
+		
         //TRATA OPERADOR ARITMETICO
         else if (ch == '+' || ch == '-' || ch == '*'){
             printf("\nOPERADOR ARITMETICO: -%c-", ch);
@@ -198,6 +220,7 @@ int main(){
                     printf("\n\nERRO AO ATRIBUIR SIMBOLO");
                     break;
             }
+             ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
 
         }
         //TRATA OPERADOR RELACIONAL
@@ -213,40 +236,40 @@ int main(){
             switch(ch){
 
                 case '!':
-                    temp_next_char = fgetc(fptr);
-                    if(temp_next_char == '='){
+                    ch = fgetc(fptr);
+                    if(ch == '='){
                         strcpy(simbolo_opr, "sdif");
                         lexema_opr[1] = '=';
                         adicionarNo(&listaTokens, lexema_opr, simbolo_opr);
+                        ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
                     } else {
-                        ungetc(temp_next_char, fptr);
                         printf("\n\nTOKEN INVALIDO");
                     }
                     break;
 
                 case '<':
-                    temp_next_char = fgetc(fptr);
-                    if(temp_next_char == '='){
+                    ch = fgetc(fptr);
+                    if(ch == '='){
                         strcpy(simbolo_opr, "smenorig");
                         lexema_opr[1] = '=';
                         adicionarNo(&listaTokens, lexema_opr, simbolo_opr);
+                        ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
                     } else {
                         strcpy(simbolo_opr, "smenor");
                         adicionarNo(&listaTokens, lexema_opr, simbolo_opr);
-                        ungetc(temp_next_char, fptr);
                     }
                     break;
 
                 case '>':
-                    temp_next_char = fgetc(fptr);
-                    if(temp_next_char == '='){
+                    ch = fgetc(fptr);
+                    if(ch == '='){
                         strcpy(simbolo_opr, "smaiorig");
                         lexema_opr[1] = '=';
                         adicionarNo(&listaTokens, lexema_opr, simbolo_opr);
+                        ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
                     } else {
                         strcpy(simbolo_opr, "smaior");
                         adicionarNo(&listaTokens, lexema_opr, simbolo_opr);
-                        ungetc(temp_next_char, fptr);
                     }
                     break;
 
@@ -254,6 +277,7 @@ int main(){
                     strcpy(simbolo_opr, "sig");
                     lexema_opr[1] = '\0';
                     adicionarNo(&listaTokens, lexema_opr, simbolo_opr);
+                    ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
                     break;
 
                 default:
@@ -275,26 +299,31 @@ int main(){
                 case ';':
                     strcpy(simbolo_pont, "sponto_virgula");
                     adicionarNo(&listaTokens, lexema_pont, simbolo_pont);
+                    ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
                     break;
 
                 case ',':
                     strcpy(simbolo_pont, "svirgula");
                     adicionarNo(&listaTokens, lexema_pont, simbolo_pont);
+                    ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
                     break;
 
                 case '(':
                     strcpy(simbolo_pont, "sabre_parenteses");
                     adicionarNo(&listaTokens, lexema_pont, simbolo_pont);
+                    ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
                     break;
 
                 case ')':
                     strcpy(simbolo_pont, "sfecha_parenteses");
                     adicionarNo(&listaTokens, lexema_pont, simbolo_pont);
+                    ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
                     break;
 
                 case '.':
                     strcpy(simbolo_pont, "sponto");
                     adicionarNo(&listaTokens, lexema_pont, simbolo_pont);
+                    ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
                     break;
             }
 
