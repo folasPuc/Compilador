@@ -74,8 +74,18 @@ int main(){
             return 0;
         //TRATA DIGITO
         if (isdigit(ch)){
-            printf("%c", ch);
-            ch = fgetc(fptr);
+            // printf("%c", ch);
+            char simbolo[50] = {0};
+            char numero[50] = {0};
+            int index = 0;
+            while(isdigit(ch)){
+                numero[index] = ch;
+                index++;
+                ch = fgetc(fptr);
+            }
+            strcpy(simbolo, "snumero");
+            adicionarNo(&listaTokens, numero, simbolo);
+
         }
         //LETRA - TRATA IDENTIFICADOR E PALAVRA RESERVADA
         else if (isalpha(ch)){
