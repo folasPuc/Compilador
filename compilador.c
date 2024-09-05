@@ -4,6 +4,8 @@
 #include <string.h>
 #include <ctype.h>
 
+int line_counter = 1;
+
 typedef struct {
     char lexema[50];
     char simbolo[50];  // Supondo que o valor máximo de um token seja 50 caracteres
@@ -57,24 +59,39 @@ int main(){
     ch = fgetc(fptr);
     //Loop principal, caractere por caractere
     while (ch != EOF) {
+
         //Descarta comentários '{}' e espaço
-        while(ch == '{' || (isspace(ch) && ch != EOF)){
+        while((ch == '{' || (isspace(ch) || ch == '\t' || ch == '\n')) && ch != EOF){
+
+            if(ch == ' ' && ch != EOF){
+                ch = fgetc(fptr);
+            }
+
+            if(ch == '\n'){
+                line_counter++;
+                printf("\n\nLeitura da linha %d\n\n", line_counter);
+                ch = fgetc(fptr);
+            }
+
             if(ch == '{'){
                 while(ch != '}' && ch != EOF){
                     ch = fgetc(fptr);
                 }
+
+                ch = fgetc(fptr);
+
+            }if(ch == '\t'){
                 ch = fgetc(fptr);
             }
-            else if (isspace(ch) && ch != EOF){
-                ch = fgetc(fptr);
-            }
+
         }
         //Verifica se é END OF FILE (EOF)
         if(ch == EOF)
             return 0;
+
         //TRATA DIGITO
         if (isdigit(ch)){
-            // printf("%c", ch);
+            printf("%c", ch);
             char simbolo[50] = {0};
             char numero[50] = {0};
             int index = 0;
@@ -98,7 +115,7 @@ int main(){
                 buffer[counter++] = ch;
                 ch = fgetc(fptr);
             }
-            printf("[%c]", ch);
+            //printf("[%c]", ch);
             buffer[counter] = '\0'; // Termina a string com o caractere nulo
             strcpy(lexema, buffer);
 
@@ -175,7 +192,7 @@ int main(){
         }
         //TRATA ATRIBUICAO
         else if (ch == ':'){
-            printf("ATRIBUICAO: -%c-", ch);
+            printf("%c", ch);
             char buffer[50] = {0};
             char simbolo[50];
             char lexema[50];
@@ -200,10 +217,10 @@ int main(){
 
 
         }
-		
+
         //TRATA OPERADOR ARITMETICO
         else if (ch == '+' || ch == '-' || ch == '*'){
-            printf("\nOPERADOR ARITMETICO: -%c-", ch);
+            printf("%c", ch);
             char simbolo_arit[7];
             char lexema_arit[5] = {0};
 
@@ -235,7 +252,7 @@ int main(){
         }
         //TRATA OPERADOR RELACIONAL
         else if (ch == '!' || ch == '<' || ch == '>' || ch == '='){
-            printf("\nOPERADOR RELACIONAL: -%c-", ch);
+            printf("%c", ch);
             //!=, <, <=, >, >=, =
             char simbolo_opr[10];
             char lexema_opr[5] = {0};
@@ -297,7 +314,7 @@ int main(){
         }
         //TRATA PONTUACAO
         else if (ch == ';' || ch == ',' || ch == '(' || ch == ')' || ch == '.'){
-            printf("\nPONTUACAO: -%c-", ch);
+            printf("%c", ch);
 
             char simbolo_pont[20];
             char lexema_pont[5] = {0};
