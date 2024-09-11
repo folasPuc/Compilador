@@ -74,8 +74,17 @@ int main(){
             }
 
             if(ch == '{'){
-                while(ch != '}' && ch != EOF){
+                int line_holder = line_counter; //segura a linha para indicar para o usuario no final
+                while(ch != '}'){
                     ch = fgetc(fptr);
+                    if(ch == '{'){ //verifica se encontra a abertura de outro comentario sem fechar o primeiro
+                        printf("Feche o comentario da linha %d ", line_holder);
+                        return 0;
+                    }
+                    if(ch == EOF){ //verifica se abriu o comentario e esqueceu de fechar ate o final do arquivo
+                        printf(" burro codigo todo sem fechar o comentario da linha %d ", line_holder);
+                        return 0;
+                    }
                 }
 
                 ch = fgetc(fptr);
@@ -357,7 +366,8 @@ int main(){
         }
         //ERRO
         else {
-            printf("ERRO");
+            printf("\nCaracter invalido: %c\nLinha %d", ch, line_counter);
+            break;
         }
         // printf("%c", ch);
     }

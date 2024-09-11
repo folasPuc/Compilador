@@ -9,11 +9,11 @@ inicio
  leia(v);
  {leia a taxa de juros }
  leia(juro);
- { Leia o periodo };
+  {Leia o periodo } ;
  leia(max);
  valor:= 1;
  i:= 1;
- enquanto i <= max { (1+juro) elevado a n }
+ enquanto i <= max { (1+juro) elevado a n } 
  faca inicio
  valor:= valor*(1+juro);
  i:= i+1
