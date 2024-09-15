@@ -74,15 +74,18 @@ int main(){
             }
 
             if(ch == '{'){
+                int comentario_counter = 1;
                 int line_holder = line_counter; //segura a linha para indicar para o usuario no final
-                while(ch != '}'){
+                while(comentario_counter != 0){
                     ch = fgetc(fptr);
                     if(ch == '{'){ //verifica se encontra a abertura de outro comentario sem fechar o primeiro
-                        printf("Feche o comentario da linha %d ", line_holder);
-                        return 0;
+                        comentario_counter++;
+                    }
+                    if(ch == '}') {
+                        comentario_counter--;
                     }
                     if(ch == EOF){ //verifica se abriu o comentario e esqueceu de fechar ate o final do arquivo
-                        printf(" burro codigo todo sem fechar o comentario da linha %d ", line_holder);
+                        printf(" Feche o comentario da linha: %d ", line_holder);
                         return 0;
                     }
                 }

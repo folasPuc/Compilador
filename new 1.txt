@@ -5,7 +5,7 @@ inicio
 enquanto v != -1
 faca
 inicio
- {leia o valor inicial}
+ {leia o valor {inicial} }
  leia(v);
  {leia a taxa de juros }
  leia(juro);
