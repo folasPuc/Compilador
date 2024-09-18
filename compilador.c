@@ -84,6 +84,10 @@ int main(){
                     if(ch == '}') {
                         comentario_counter--;
                     }
+                    if(ch == '\n'){
+                        line_counter++;
+                        printf("\n\nLeitura da linha %d\n\n", line_counter);
+                    }
                     if(ch == EOF){ //verifica se abriu o comentario e esqueceu de fechar ate o final do arquivo
                         printf(" Feche o comentario da linha: %d ", line_holder);
                         return 0;
@@ -99,7 +103,7 @@ int main(){
         }
         //Verifica se é END OF FILE (EOF)
         if(ch == EOF)
-            return 0;
+            break;
 
         //TRATA DIGITO
         if (isdigit(ch)){
@@ -108,6 +112,7 @@ int main(){
             char numero[50] = {0};
             int index = 0;
             while(isdigit(ch)){
+                printf("%c", ch);
                 numero[index] = ch;
                 index++;
                 ch = fgetc(fptr);
@@ -214,6 +219,7 @@ int main(){
             ch = fgetc(fptr); //le mais um caractere para ver se encontra o =
 
             if (ch == '='){ //encontrou o =, concatenar o montar o token
+                printf("%c", ch);
                 buffer[++counter] = ch;
                 strcpy(lexema, buffer); //copia o conteudo do buffer para o lexema
                 strcpy(simbolo, "satribuicao"); //copia "satribuicao" para o simbolo
@@ -277,6 +283,7 @@ int main(){
                 case '!':
                     ch = fgetc(fptr);
                     if(ch == '='){
+                        printf("%c", ch);
                         strcpy(simbolo_opr, "sdif");
                         lexema_opr[1] = '=';
                         adicionarNo(&listaTokens, lexema_opr, simbolo_opr);
@@ -289,6 +296,7 @@ int main(){
                 case '<':
                     ch = fgetc(fptr);
                     if(ch == '='){
+                        printf("%c", ch);
                         strcpy(simbolo_opr, "smenorig");
                         lexema_opr[1] = '=';
                         adicionarNo(&listaTokens, lexema_opr, simbolo_opr);
@@ -302,6 +310,7 @@ int main(){
                 case '>':
                     ch = fgetc(fptr);
                     if(ch == '='){
+                        printf("%c", ch);
                         strcpy(simbolo_opr, "smaiorig");
                         lexema_opr[1] = '=';
                         adicionarNo(&listaTokens, lexema_opr, simbolo_opr);
@@ -370,7 +379,13 @@ int main(){
         //ERRO
         else {
             printf("\nCaracter invalido: %c\nLinha %d", ch, line_counter);
-            break;
+            char simbolo[50] = {0};
+            char lexema[50] = {0};
+
+            strcpy(simbolo, "serro");
+            lexema[0] = ch;
+            adicionarNo(&listaTokens, lexema, simbolo);
+            ch = fgetc(fptr);
         }
         // printf("%c", ch);
     }
