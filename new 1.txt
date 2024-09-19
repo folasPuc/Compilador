@@ -1,23 +1,45 @@
-programa test;
-var v: inteiro;
- i,max, juro,: inteiro;
+procedimento p4;
+var i:inteiro;
 inicio
-enquanto v != -1
-faca
+	i:=0;
+	val:=i;
+	escreva(val);
+	p1;
+	escreva(val)
+fim;
+
 inicio
- {leia o valor inicial}
- leia(v);
- {leia a taxa de juros }
- leia(juro);
- { Leia o periodo };
- leia(max);
- valor:= 1;
- i:= 1;
- enquanto i <= max { (1+juro) elevado a n }
- faca inicio
- valor:= valor*(1+juro);
- i:= i+1
- fim; 
- escreva(valor)
-fim
-fim
+   i:=0;
+   enquanto i < 3 faca
+   inicio
+      leia(n); {leitura do valor
+
+
+
+		para o qual se quer
+
+
+
+		calcular o fatorial
+    } i:= i+1;
+      j:=fat;
+      												
+      escreva(j);
+   fim
+
+   {agora comeca a chamada dos proce
+			dimentos
+							};
+
+   p4; {que vai chamar p1 
+	que vai chamar p2
+	que vai chamar p3
+	que vai chamar p1
+	que vai chamar p2
+	que vai chamar p3
+	que vai chamar p1
+	que vai chamar p2
+	que vai chamar p3
+	que vai chamar p1}
+
+fim.
