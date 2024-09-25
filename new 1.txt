@@ -8,6 +8,8 @@ inicio
 	escreva(val)
 fim;
 
+{ {   } }
+
 inicio
    i:=0;
    enquanto i < 3 faca
