@@ -3,6 +3,31 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <windows.h>
+
+
+void analisa_chamada_procedimento();
+void analisa_chamada_funcao();
+void analisa_escreva();
+void analisa_leia();
+void analisa_atribuicao();
+void analisa_atrib_chprocedimento();
+void analisa_comando_simples();
+void analisa_comandos();
+void analisa_tipo();
+void analisa_variaveis();
+void analisa_et_variaveis();
+void analisa_bloco();
+void analisa_enquanto();
+void analisa_se();
+void analisa_subrotinas();
+void analisa_declaracao_procedimento();
+void analisa_declaracao_funcao();
+void analisa_expressao();
+void analisa_expressao_simples();
+void analisa_termo();
+void analisa_fator();
+
 
 int line_counter = 1;
 FILE *fptr;
@@ -10,8 +35,10 @@ char ch;
 
 typedef struct {
     char lexema[50];
-    char simbolo[50];  // Supondo que o valor máximo de um token seja 50 caracteres
+    char simbolo[50];
 } Token;
+
+Token token;
 
 char tratarEspacoComentario() {
     while ((ch == '{' || isspace(ch) || ch == '\t' || ch == '\n') && ch != EOF) {
@@ -36,7 +63,7 @@ char tratarEspacoComentario() {
                 }
                 if (ch == EOF) {
                     printf(" Feche o comentario da linha: %d ", line_holder);
-                    return EOF;  // Retorna EOF para indicar o fim do arquivo
+                    return EOF;
                 }
             }
             ch = fgetc(fptr);
@@ -47,8 +74,7 @@ char tratarEspacoComentario() {
     return ch;  // Retorna o próximo caractere após o tratamento
 }
 
-Token* TratarDigito(){
-    Token* token = (Token*)malloc(sizeof(Token));  // Aloca memória para o token
+void TratarDigito(){
     char simbolo[50] = {0};
     char numero[50] = {0};
     int index = 0;
@@ -58,13 +84,12 @@ Token* TratarDigito(){
         ch = fgetc(fptr);
     }
     strcpy(simbolo, "snumero");
-    strcpy(token->lexema, numero);
-    strcpy(token->simbolo, simbolo);
-    return token;
+    strcpy(token.lexema, numero);
+    strcpy(token.simbolo, simbolo);
+    return;
 }
 
-Token* TratarIdentificador_PalavraReservada(){
-    Token* token = (Token*)malloc(sizeof(Token));  // Aloca memória para o token
+void TratarIdentificador_PalavraReservada(){
     char buffer[50] = {0};
     char simbolo[50];
     char lexema[50];
@@ -74,7 +99,6 @@ Token* TratarIdentificador_PalavraReservada(){
         buffer[counter++] = ch;
         ch = fgetc(fptr);
     }
-    //printf("[%c]", ch);
     buffer[counter] = '\0'; // Termina a string com o caractere nulo
     strcpy(lexema, buffer);
 
@@ -145,15 +169,13 @@ Token* TratarIdentificador_PalavraReservada(){
         strcpy(simbolo, "sidentificador");
     }
 
-    strcpy(token->lexema, lexema);
-    strcpy(token->simbolo, simbolo);
+    strcpy(token.lexema, lexema);
+    strcpy(token.simbolo, simbolo);
 
-     return token;
-
+    return;
 }
 
-Token* TrataAtribuicao(){
-    Token* token = (Token*)malloc(sizeof(Token));  // Aloca memória para o token
+void TrataAtribuicao(){
     char buffer[50] = {0};
     char simbolo[50];
     char lexema[50];
@@ -173,14 +195,13 @@ Token* TrataAtribuicao(){
         strcpy(simbolo, "sdoispontos"); //copia "sdoispontos" para o simbolo
     }
 
-    strcpy(token->lexema, lexema);
-    strcpy(token->simbolo, simbolo);
+    strcpy(token.lexema, lexema);
+    strcpy(token.simbolo, simbolo);
             
-    return token;
+    return;
 }
 
-Token* TratarOperadorRelacional(){
-    Token* token = (Token*)malloc(sizeof(Token));  // Aloca memória para o token
+void TratarOperadorRelacional(){
     //!=, <, <=, >, >=, =
     char simbolo_opr[10];
     char lexema_opr[5] = {0};
@@ -194,8 +215,8 @@ Token* TratarOperadorRelacional(){
             if(ch == '='){
                 strcpy(simbolo_opr, "sdif");
                 lexema_opr[1] = '=';
-                strcpy(token->lexema, lexema_opr);
-                strcpy(token->simbolo, simbolo_opr);
+                strcpy(token.lexema, lexema_opr);
+                strcpy(token.simbolo, simbolo_opr);
                 ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
             
             } else {
@@ -208,13 +229,13 @@ Token* TratarOperadorRelacional(){
             if(ch == '='){
                 strcpy(simbolo_opr, "smenorig");
                 lexema_opr[1] = '=';
-                strcpy(token->lexema, lexema_opr);
-                strcpy(token->simbolo, simbolo_opr);
+                strcpy(token.lexema, lexema_opr);
+                strcpy(token.simbolo, simbolo_opr);
                 ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
             } else {
                 strcpy(simbolo_opr, "smenor");
-                strcpy(token->lexema, lexema_opr);
-                strcpy(token->simbolo, simbolo_opr);
+                strcpy(token.lexema, lexema_opr);
+                strcpy(token.simbolo, simbolo_opr);
             }
             break;
 
@@ -223,21 +244,21 @@ Token* TratarOperadorRelacional(){
             if(ch == '='){
                 strcpy(simbolo_opr, "smaiorig");
                 lexema_opr[1] = '=';
-                strcpy(token->lexema, lexema_opr);
-                strcpy(token->simbolo, simbolo_opr);
+                strcpy(token.lexema, lexema_opr);
+                strcpy(token.simbolo, simbolo_opr);
                 ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
             } else {
                 strcpy(simbolo_opr, "smaior");
-                strcpy(token->lexema, lexema_opr);
-                strcpy(token->simbolo, simbolo_opr);
+                strcpy(token.lexema, lexema_opr);
+                strcpy(token.simbolo, simbolo_opr);
             }
             break;
 
         case '=':
             strcpy(simbolo_opr, "sig");
             lexema_opr[1] = '\0';
-            strcpy(token->lexema, lexema_opr);
-            strcpy(token->simbolo, simbolo_opr);
+            strcpy(token.lexema, lexema_opr);
+            strcpy(token.simbolo, simbolo_opr);
             ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
             break;
 
@@ -245,12 +266,11 @@ Token* TratarOperadorRelacional(){
             printf("\n\nERRO NA LEITURA DOS OPERADORES RELACIONAIS");
         }
     
-    return token;
+    return;
 }
 
-Token* TrataPontuacao(){
-    Token* token = (Token*)malloc(sizeof(Token));  // Aloca memória para o token
-    char simbolo_pont[20];
+void TrataPontuacao(){
+    char simbolo_pont[50];
     char lexema_pont[5] = {0};
 
     lexema_pont[0] = ch;
@@ -258,45 +278,44 @@ Token* TrataPontuacao(){
     switch(ch){
         case ';':
             strcpy(simbolo_pont, "sponto_virgula");
-            strcpy(token->lexema, lexema_pont);
-            strcpy(token->simbolo, simbolo_pont);
+            strcpy(token.lexema, lexema_pont);
+            strcpy(token.simbolo, simbolo_pont);
             ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
             break;
 
         case ',':
             strcpy(simbolo_pont, "svirgula");
-            strcpy(token->lexema, lexema_pont);
-            strcpy(token->simbolo, simbolo_pont);
+            strcpy(token.lexema, lexema_pont);
+            strcpy(token.simbolo, simbolo_pont);
             ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
             break;
 
         case '(':
             strcpy(simbolo_pont, "sabre_parenteses");
-            strcpy(token->lexema, lexema_pont);
-            strcpy(token->simbolo, simbolo_pont);
+            strcpy(token.lexema, lexema_pont);
+            strcpy(token.simbolo, simbolo_pont);
             ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
             break;
 
         case ')':
             strcpy(simbolo_pont, "sfecha_parenteses");
-            strcpy(token->lexema, lexema_pont);
-            strcpy(token->simbolo, simbolo_pont);
+            strcpy(token.lexema, lexema_pont);
+            strcpy(token.simbolo, simbolo_pont);
             ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
             break;
 
         case '.':
             strcpy(simbolo_pont, "sponto");
-            strcpy(token->lexema, lexema_pont);
-            strcpy(token->simbolo, simbolo_pont);
+            strcpy(token.lexema, lexema_pont);
+            strcpy(token.simbolo, simbolo_pont);
             ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
             break;
     }
     
-    return token;         
+    return;         
 }
 
-Token* trataOperadorAritmetico(){
-    Token* token = (Token*)malloc(sizeof(Token));  // Aloca memória para o token
+void trataOperadorAritmetico(){
     char simbolo_arit[7];
     char lexema_arit[5] = {0};
     
@@ -320,429 +339,496 @@ Token* trataOperadorAritmetico(){
     
     ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
 
-    strcpy(token->lexema, lexema_arit);
-    strcpy(token->simbolo, simbolo_arit);
+    strcpy(token.lexema, lexema_arit);
+    strcpy(token.simbolo, simbolo_arit);
             
-    return token;
+    return;
 }
 
-Token* AnalisadorLexical(){
-    Token* token = (Token*)malloc(sizeof(Token));  // Aloca memória para o token
+void AnalisadorLexical(){
+    //Token* token = (Token*)malloc(sizeof(Token));  // Aloca memória para o token
 
     tratarEspacoComentario();
 
     if(ch == EOF)
-        return token;
+        return;
         
     // TRATA DIGITO    
     if (isdigit(ch)){
-        token = TratarDigito();
+        TratarDigito();
 
     }
         
     //TRATA IDENTIFICADOR PALAVRA RESERVADA
     else if (isalpha(ch)){
-        token = TratarIdentificador_PalavraReservada();
+        TratarIdentificador_PalavraReservada();
     }
 
     //TRATA ATRIBUICAO
     else if (ch == ':'){
-        token = TrataAtribuicao();
+        TrataAtribuicao();
     }
         //TRATA OPERADOR ARITMETICO
     else if (ch == '+' || ch == '-' || ch == '*'){
-        token = trataOperadorAritmetico();
+        trataOperadorAritmetico();
     } 
 
     //TRATA OPERADOR RELACIONAL
     else if (ch == '!' || ch == '<' || ch == '>' || ch == '='){
-        token = TratarOperadorRelacional();
+        TratarOperadorRelacional();
     }
 
     //TRATA PONTUACAO
     else if (ch == ';' || ch == ',' || ch == '(' || ch == ')' || ch == '.'){
-        token = TrataPontuacao();
+        TrataPontuacao();
     } else {
         printf("\nCaracter invalido: %c\nLinha %d", ch, line_counter);
-        //ch = fgetc(fptr);
     }
 
-    return token;
+    return;
 }
 
+// Acima são os comentarios do analisador lexical
+
+
+// Abaixo os procedimentos do sintatioc
+
+
+void analisa_chamada_procedimento(){
+    if(strcmp(token.simbolo, "sidentificador") == 0){
+        AnalisadorLexical();
+    }else{
+        printf("ERRO! [ Analisa_chamada_funcao ]- diferente de indentificador linha:%d", line_counter);
+    }
+}
+
+void analisa_chamada_funcao(){
+    AnalisadorLexical();
+    if(strcmp(token.simbolo, "sidentificador") == 0){
+        AnalisadorLexical();
+    }else{
+        printf("ERRO! [ Analisa_chamada_funcao ]- diferente de indentificador linha:%d", line_counter);
+    }
+}
+
+
+
+void analisa_escreva(){
+    //Feito
+    AnalisadorLexical();
+    
+    if(strcmp(token.simbolo, "sabre_parenteses") == 0){
+        AnalisadorLexical();
+        if(strcmp(token.simbolo, "sidentificador") == 0){
+            AnalisadorLexical();
+            if(strcmp(token.simbolo, "sfecha_parenteses") == 0){
+                AnalisadorLexical(); //
+            }else{
+                printf("ERRO! [ analisa_escreva] Faltou fecha parenteses na linha %d", line_counter);
+            }
+        }else{
+        printf("ERRO! [ analisa_escreva] Faltou identificador na linha %d", line_counter);
+        }
+    }else{
+        printf("ERRO! [ analisa_escreva] Faltou abre parenteses na linha %d", line_counter);
+    }
+
+}
+
+
+
+
+
+
+void analisa_leia(){
+    //Feito
+    AnalisadorLexical();
+    if(strcmp(token.simbolo, "sabre_parenteses") == 0){
+
+        AnalisadorLexical();
+        if(strcmp(token.simbolo, "sidentificador") == 0){
+            
+            AnalisadorLexical();
+            if(strcmp(token.simbolo, "sfecha_parenteses") == 0){
+                AnalisadorLexical();
+            }else{
+                printf("ERRO!: [ analisa_leia] Diferente de fecha parenteses  Linha:%d", line_counter);
+            }
+            
+        }else{
+           printf("ERRO!: [ analisa_leia ] Diferente indentificador  Linha:%d", line_counter); 
+        }
+        
+    }else{
+        printf("ERRO!: [ analisa_leia ] Diferente de abre parenteses  Linha:%d", line_counter);
+    }
+}
+
+void analisa_atribuicao(){
+    //CONSIDERANDO QUE QUANDO CHEGAR AQUI EU TENHO O TOKEN :=
+    AnalisadorLexical();
+
+    analisa_expressao();
+    printf("[%s] $$--$$ [%s]", token.lexema, token.simbolo);
+}
+
+
+void analisa_atrib_chprocedimento(){
+    //Feito
+    //CONSIDERANDO QUE TENHO UM SIDENTIFICADOR NO TOKEN
+    AnalisadorLexical();
+    if(strcmp(token.simbolo, "satribuicao") == 0){
+        analisa_atribuicao();
+    }else{
+        analisa_chamada_procedimento();
+    }
+
+}
+
+
+void analisa_comando_simples(){
+    //Feito
+    if(strcmp(token.simbolo, "sidentificador") == 0){
+        analisa_atrib_chprocedimento();
+    }
+
+    else if(strcmp(token.simbolo, "sse") == 0){
+        analisa_se();
+    }
+    else if(strcmp(token.simbolo, "senquanto") == 0){
+        analisa_enquanto();
+    }
+
+    else if(strcmp(token.simbolo, "sleia") == 0){
+        analisa_leia();
+    }
+
+    else if(strcmp(token.simbolo, "sescreva") == 0){
+        analisa_escreva();
+    }
+    else{
+        analisa_comandos();
+    }
+    
+}
+
+
+
+void analisa_comandos(){
+    //Feito
+    if(strcmp(token.simbolo, "sinicio") == 0){ 
+        AnalisadorLexical();
+        analisa_comando_simples();
+        printf("sadlksadlkasd");
+        while (strcmp(token.simbolo, "sfim") != 0)
+        {
+            Sleep(2);
+            printf("[%s] [%s] -- ", token.lexema, token.simbolo);
+            if(strcmp(token.simbolo, "sponto_virgula") == 0){
+                AnalisadorLexical();
+                if(strcmp(token.simbolo, "sfim") != 0){
+                    analisa_comando_simples();
+                    printf("\n\n [%s]   ~~~   [%s]\n\n", token.lexema, token.simbolo);
+                } 
+            }else{
+                printf("ERRO! [ analisa_comandos ] - analisa comandos Esperava ponto e virgula na linha %d", line_counter);
+            }
+        }
+        
+        AnalisadorLexical();
+        
+    } else {
+        printf("ERRO! [ analisa_comandos ] esperava sinicio na linha %d", line_counter);
+    }
+}
+
+
+void analisa_tipo(){
+    //Feito
+    if( (strcmp(token.simbolo, "sinteiro") != 0) && (strcmp(token.simbolo, "sbooleano") != 0)){
+        printf("ERRO!: [ analisa_tipo ]  tipo invalido : %d", line_counter);
+        return;
+    }
+
+    AnalisadorLexical();
+}
+
+
+void analisa_variaveis(){
+    //Feito
+    do{
+        if(strcmp(token.simbolo, "sidentificador") == 0){
+            AnalisadorLexical();
+            if(strcmp(token.simbolo, "svirgula") == 0 || strcmp(token.simbolo, "sdoispontos") == 0){
+
+                if(strcmp(token.simbolo, "svirgula") == 0){
+                    AnalisadorLexical();
+
+                    if(strcmp(token.simbolo, "sdoispontos") == 0){
+                        printf("ERRO!: [ Analisa_variaveis ] - diferente de dois pontos - Linha:%d", line_counter);
+                    }
+                }
+            }else{
+                printf("ERRO!: [ Analisa_variaveis ] - diferente de dois pontos e virgula - Linha:%d", line_counter);
+            }
+
+        }else{
+            Sleep(2);
+            printf("ERRO!: [ Analisa_variaveis ] - diferente de indentificador - Linha:%d TOKEN: %s", line_counter, token.simbolo);
+        }
+        
+    }while(strcmp(token.simbolo, "sdoispontos") != 0);
+
+    AnalisadorLexical();
+    analisa_tipo();
+}
+
+
+void analisa_et_variaveis(){
+    //FEITO
+    if(strcmp(token.simbolo, "svar") == 0){
+
+        AnalisadorLexical();
+        if(strcmp(token.simbolo, "sidentificador") == 0){
+
+            while(strcmp(token.simbolo, "sidentificador") == 0){
+                analisa_variaveis();
+                if(strcmp(token.simbolo, "sponto_virgula") == 0){
+                    AnalisadorLexical();
+                }else{
+                    printf("ERRO!: [ analisa_et_variaveis ] - diferente de ponto e virgula - Linha:%d", line_counter);
+                }
+            }
+            
+        }else{
+            printf("ERRO!: [ Analisa_et_variaveis ]- diferente de indetificador - Linha:%d", line_counter);
+        }
+    }
+}
+
+void analisa_bloco(){
+    //Feito
+    AnalisadorLexical();
+    analisa_et_variaveis();
+    analisa_subrotinas();
+    analisa_comandos();
+}
+
+void analisa_enquanto(){
+    //Feito
+    AnalisadorLexical();
+    //aqui tem o v
+    analisa_expressao();
+    if(strcmp(token.simbolo, "sfaca") == 0){
+        AnalisadorLexical();
+        analisa_comando_simples();
+    }else{
+        printf("ERRO! [ analisa_enquanto ] Esperava simbolo FACA na linha %d", line_counter);
+    }
+
+}
+
+void analisa_se(){
+    //Feito
+    AnalisadorLexical();
+    analisa_expressao();
+    if(strcmp(token.simbolo, "sentao") == 0){
+        AnalisadorLexical();
+        analisa_comando_simples();
+        if(strcmp(token.simbolo, "ssenao") == 0){
+            AnalisadorLexical();
+            analisa_comando_simples();
+        }
+    }else{
+        printf("ERRO! [ analisa_se ] esperava ENTAO na linha %d", line_counter);
+    }
+
+}
+
+void analisa_subrotinas(){
+    //Feito
+    while ((strcmp(token.simbolo, "sfuncao") == 0) || (strcmp(token.simbolo, "sprocedimento") == 0))
+    {
+        if(strcmp(token.simbolo, "sfuncao") == 0){
+            analisa_declaracao_funcao();
+        }
+        else if(strcmp(token.simbolo, "sprocedimento") == 0){
+            analisa_declaracao_procedimento();
+        }
+
+        if(strcmp(token.simbolo, "sponto_virgula") == 0){
+            AnalisadorLexical();
+        }else{
+            printf("ERRO! [ analisa_subrotinas ] Esperava ponto e virgula na linha %d", line_counter);
+        }
+    }
+    
+    
+}
+
+void analisa_declaracao_procedimento(){
+    //Feito
+    AnalisadorLexical();
+    if(strcmp(token.simbolo, "sidentificador") == 0){
+        AnalisadorLexical();
+        if(strcmp(token.simbolo, "sponto_virgula") == 0){
+            analisa_bloco();
+        }else{
+            printf("ERRO! [analisa_declaracao_procedimento] esperava ponto e virgula na linha %d", line_counter);
+        }
+    }else{
+        printf("ERRO! [analisa_declaracao_procedimento] identificador na linha %d", line_counter);
+    }
+}
+
+void analisa_declaracao_funcao(){
+    //Feito
+    AnalisadorLexical();
+    if(strcmp(token.simbolo, "sidentificador") == 0){
+        AnalisadorLexical();
+        if(strcmp(token.simbolo, "sdoispontos") == 0){
+            AnalisadorLexical();
+            if( (strcmp(token.simbolo, "sinteiro") == 0) || (strcmp(token.simbolo, "sbooleano") == 0) ){
+                AnalisadorLexical();
+                if(strcmp(token.simbolo, "sponto_virgula") == 0){
+                    analisa_bloco();
+                }
+            }else {
+                printf("ERRO! [ analisa_declaracao_funcao ] esperava tipo da funcao (inteiro ou booleano) na linha %d", line_counter);
+            }
+        }else {
+            printf("ERRO!  [ analisa_declaracao_funcao ] esperava dois pontos na linha %d", line_counter);
+        }
+    }else {
+        printf("ERRO! [ analisa_declaracao_funcao ] esperava identificador na linha %d", line_counter);
+    }
+}
+
+
+
+// da pra fazer 
+void analisa_expressao(){
+    //feito
+    analisa_expressao_simples();
+    if( (strcmp(token.simbolo, "smaior") == 0) || (strcmp(token.simbolo, "smaiorig") == 0) || (strcmp(token.simbolo, "sig") == 0) || (strcmp(token.simbolo, "smenor") == 0) || (strcmp(token.simbolo, "smenorig") == 0) || (strcmp(token.simbolo, "sdif") == 0)){
+        AnalisadorLexical();
+        analisa_expressao_simples();
+    }
+}
+
+
+
+// da pra fazer
+void analisa_expressao_simples(){
+    //feito
+    if((strcmp(token.simbolo, "smais") == 0) || (strcmp(token.simbolo, "smenos") == 0))
+        AnalisadorLexical();
+
+    analisa_termo();
+
+    while((strcmp(token.simbolo, "smais") == 0) || (strcmp(token.simbolo, "smenos") == 0) || (strcmp(token.simbolo, "sou") == 0)){
+        AnalisadorLexical();
+        analisa_termo();
+    }
+}
+
+
+void analisa_termo(){
+    //feito
+    analisa_fator();
+    
+    while(strcmp(token.simbolo, "smult") == 0 || strcmp(token.simbolo, "sdiv") == 0 || strcmp(token.simbolo, "se") == 0){
+        AnalisadorLexical();
+        analisa_fator();
+    }
+}
+
+
+// falata analisa_chamada_funcao (desafio)
+void analisa_fator(){
+
+    if(strcmp(token.simbolo, "sidentificador") == 0){
+        //troço azul
+        AnalisadorLexical();
+    } else if (strcmp(token.simbolo, "snumero") == 0){
+
+        AnalisadorLexical();
+
+    } else if (strcmp(token.simbolo, "snao") == 0){
+        AnalisadorLexical();
+        analisa_fator();
+
+    } else if (strcmp(token.simbolo, "sabre_parenteses") == 0){
+        AnalisadorLexical();
+        analisa_expressao();
+        
+        if(strcmp(token.simbolo, "sfecha_parenteses") == 0){
+            AnalisadorLexical();
+        } else {
+            printf("\n\n ERRO -- Falta de fechar parenteses\n\n");
+        }
+
+    } else if ((strcmp(token.lexema, "verdadeiro") == 0) || (strcmp(token.lexema, "falso") == 0)){
+        AnalisadorLexical();
+
+    } else {
+        printf("\n\n ERRO -- ");
+    }
+}
+
+
+
+
 int main(){
-    Token* Token;
+    
+    
     // Abre o arquivo "new 1.txt" com permissão de leitura
     fptr = fopen("new 1.txt", "r");
 
+    // Faz a verificação do arquivo de leirura
     if (NULL == fptr) {
         printf("file can't be opened \n");
         return EXIT_FAILURE;
     }
-
-    printf("Conteudo do arquivo: \n");
     ch = fgetc(fptr);
-    while(ch != EOF){
-        Token = AnalisadorLexical();
-        printf("%s ----- %s\n", Token->lexema, Token->simbolo);
 
-        
-    }
+    //Lembre de while != EOF
+ 
+    AnalisadorLexical();
 
+    if(strcmp(token.simbolo, "sprograma") == 0){
 
-    //Loop principal, caractere por caractere
-    //while (ch != EOF) {
-        
-        /*
-        //Descarta comentários '{}' e espaço
-        while((ch == '{' || (isspace(ch) || ch == '\t' || ch == '\n')) && ch != EOF){
-
-            if(ch == ' ' && ch != EOF){
-                ch = fgetc(fptr);
-            }
-
-            if(ch == '\n'){
-                line_counter++;
-                printf("\n\nLeitura da linha %d\n\n", line_counter);
-                ch = fgetc(fptr);
-            }
-
-            if(ch == '{'){
-                int comentario_counter = 1;
-                int line_holder = line_counter; //segura a linha para indicar para o usuario no final
-                while(comentario_counter != 0){
-                    ch = fgetc(fptr);
-                    if(ch == '{'){ //verifica se encontra a abertura de outro comentario sem fechar o primeiro
-                        comentario_counter++;
+        AnalisadorLexical();
+        if (strcmp(token.simbolo, "sidentificador") == 0){
+            AnalisadorLexical();
+            if(strcmp(token.simbolo, "sponto_virgula") == 0){
+                analisa_bloco();
+                if(strcmp(token.simbolo, "sponto") == 0){
+                    
+                    if(ch == EOF){
+                        printf("Sucesso!");
+                    }else{
+                        printf("ERRO!: Diferente de End of File.  Linha:%d", line_counter);
                     }
-                    if(ch == '}') {
-                        comentario_counter--;
-                    }
-                    if(ch == '\n'){
-                        line_counter++;
-                        printf("\n\nLeitura da linha %d\n\n", line_counter);
-                    }
-                    if(ch == EOF){ //verifica se abriu o comentario e esqueceu de fechar ate o final do arquivo
-                        printf(" Feche o comentario da linha: %d ", line_holder);
-                        return 0;
-                    }
+
+
+                }else {
+                    printf("ERRO!: Diferente de Ponto.  Linha:%d", line_counter);
                 }
+                
+                
+            }else{
+                printf("ERRO!: Diferente de Ponto e virgula.  Linha:%d", line_counter);
+            }
+                
 
-                ch = fgetc(fptr);
-
-            }if(ch == '\t'){
-                ch = fgetc(fptr);
-            }
-
-        }
-        //Verifica se é END OF FILE (EOF)
-        if(ch == EOF)
-            break;
-
-        
-        //TRATA DIGITO
-        if (isdigit(ch)){
-            printf("%c", ch);
-            char simbolo[50] = {0};
-            char numero[50] = {0};
-            int index = 0;
-            while(isdigit(ch)){
-                printf("%c", ch);
-                numero[index] = ch;
-                index++;
-                ch = fgetc(fptr);
-            }
-            strcpy(simbolo, "snumero");
-            adicionarNo(&listaTokens, numero, simbolo);
-
-        }
-
-        */
-        /*
-        //LETRA - TRATA IDENTIFICADOR E PALAVRA RESERVADA
-        else if (isalpha(ch)){
-            char buffer[50] = {0};
-            char simbolo[50];
-            char lexema[50];
-            int counter = 0;
-            while(isdigit(ch) || isalpha(ch) || ch == '_' && counter < 50){
-                printf("%c", ch);
-                buffer[counter++] = ch;
-                ch = fgetc(fptr);
-            }
-            //printf("[%c]", ch);
-            buffer[counter] = '\0'; // Termina a string com o caractere nulo
-            strcpy(lexema, buffer);
-
-
-            if (strcmp(buffer, "programa") == 0){
-                strcpy(simbolo, "sprograma");
-            }
-            else if (strcmp(buffer, "se") == 0){
-                strcpy(simbolo, "sse");
-            }
-            else if (strcmp(buffer, "entao") == 0){
-                strcpy(simbolo, "sentao");
-            }
-            else if (strcmp(buffer, "senao") == 0){
-                strcpy(simbolo, "ssenao");
-            }
-            else if (strcmp(buffer, "enquanto") == 0){
-                strcpy(simbolo, "senquanto");
-            }
-            else if (strcmp(buffer, "faca") == 0){
-                strcpy(simbolo, "sfaca");
-            }
-            else if (strcmp(buffer, "inicio") == 0){
-                strcpy(simbolo, "sinicio");
-            }
-            else if (strcmp(buffer, "fim") == 0){
-                strcpy(simbolo, "sfim");
-            }
-            else if (strcmp(buffer, "escreva") == 0){
-                strcpy(simbolo, "sescreva");
-            }
-            else if (strcmp(buffer, "leia") == 0){
-                strcpy(simbolo, "sleia");
-            }
-            else if (strcmp(buffer, "var") == 0){
-                strcpy(simbolo, "svar");
-            }
-            else if (strcmp(buffer, "inteiro") == 0){
-                strcpy(simbolo, "sinteiro");
-            }
-            else if (strcmp(buffer, "booleano") == 0){
-                strcpy(simbolo, "sbooleano");
-            }
-            else if (strcmp(buffer, "verdadeiro") == 0){
-                strcpy(simbolo, "sverdadeiro");
-            }
-            else if (strcmp(buffer, "falso") == 0){
-                strcpy(simbolo, "sfalso");
-            }
-            else if (strcmp(buffer, "procedimento") == 0){
-                strcpy(simbolo, "sprocedimento");
-            }
-            else if (strcmp(buffer, "funcao") == 0){
-                strcpy(simbolo, "sfuncao");
-            }
-            else if (strcmp(buffer, "div") == 0){
-                strcpy(simbolo, "sdiv");
-            }
-            else if (strcmp(buffer, "e") == 0){
-                strcpy(simbolo, "se");
-            }
-            else if (strcmp(buffer, "ou") == 0){
-                strcpy(simbolo, "sou");
-            }
-            else if (strcmp(buffer, "nao") == 0){
-                strcpy(simbolo, "snao");
-            }
-            else {
-                strcpy(simbolo, "sidentificador");
-            }
-
-            adicionarNo(&listaTokens, lexema, simbolo);
-
+        }else{
+            printf("\nERRO! Faltou identificador do programa na linha %d", line_counter);
         }
         
-        //TRATA ATRIBUICAO
-        else if (ch == ':'){
-            printf("%c", ch);
-            char buffer[50] = {0};
-            char simbolo[50];
-            char lexema[50];
-            int counter = 0;
-
-            buffer[counter] = ch; //coloca o = na primeira posicao do buffer
-            ch = fgetc(fptr); //le mais um caractere para ver se encontra o =
-
-            if (ch == '='){ //encontrou o =, concatenar o montar o token
-                printf("%c", ch);
-                buffer[++counter] = ch;
-                strcpy(lexema, buffer); //copia o conteudo do buffer para o lexema
-                strcpy(simbolo, "satribuicao"); //copia "satribuicao" para o simbolo
-                adicionarNo(&listaTokens, lexema, simbolo); //faz a chamada para adicionar um novo token na lista de tokens
-                ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
-            }
-            else { //nao achou o =, montar o token somente
-                strcpy(lexema, buffer); //copia o conteudo do buffer para o lexema
-                strcpy(simbolo, "sdoispontos"); //copia "sdoispontos" para o simbolo
-                adicionarNo(&listaTokens, lexema, simbolo); //faz a chamada para adicionar um novo token na lista de tokens
-
-            }
-
-
-        }
-    
-
-        //TRATA OPERADOR ARITMETICO
-        else if (ch == '+' || ch == '-' || ch == '*'){
-            printf("%c", ch);
-            char simbolo_arit[7];
-            char lexema_arit[5] = {0};
-
-            lexema_arit[0] = ch;
-
-            switch(ch){
-
-                case '+':
-                    strcpy(simbolo_arit, "smais");
-                    adicionarNo(&listaTokens, lexema_arit, simbolo_arit);
-                    break;
-
-                case '-':
-                    strcpy(simbolo_arit, "smenos");
-                    adicionarNo(&listaTokens, lexema_arit, simbolo_arit);
-                    break;
-
-                case '*':
-                    strcpy(simbolo_arit, "smult");
-                    adicionarNo(&listaTokens, lexema_arit, simbolo_arit);
-                    break;
-
-                default:
-                    printf("\n\nERRO AO ATRIBUIR SIMBOLO");
-                    break;
-            }
-             ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
-
-        }
-        //TRATA OPERADOR RELACIONAL
-        else if (ch == '!' || ch == '<' || ch == '>' || ch == '='){
-            printf("%c", ch);
-            //!=, <, <=, >, >=, =
-            char simbolo_opr[10];
-            char lexema_opr[5] = {0};
-            char temp_next_char;
-
-            lexema_opr[0] = ch;
-
-            switch(ch){
-
-                case '!':
-                    ch = fgetc(fptr);
-                    if(ch == '='){
-                        printf("%c", ch);
-                        strcpy(simbolo_opr, "sdif");
-                        lexema_opr[1] = '=';
-                        adicionarNo(&listaTokens, lexema_opr, simbolo_opr);
-                        ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
-                    } else {
-                        printf("\n\nTOKEN INVALIDO");
-                    }
-                    break;
-
-                case '<':
-                    ch = fgetc(fptr);
-                    if(ch == '='){
-                        printf("%c", ch);
-                        strcpy(simbolo_opr, "smenorig");
-                        lexema_opr[1] = '=';
-                        adicionarNo(&listaTokens, lexema_opr, simbolo_opr);
-                        ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
-                    } else {
-                        strcpy(simbolo_opr, "smenor");
-                        adicionarNo(&listaTokens, lexema_opr, simbolo_opr);
-                    }
-                    break;
-
-                case '>':
-                    ch = fgetc(fptr);
-                    if(ch == '='){
-                        printf("%c", ch);
-                        strcpy(simbolo_opr, "smaiorig");
-                        lexema_opr[1] = '=';
-                        adicionarNo(&listaTokens, lexema_opr, simbolo_opr);
-                        ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
-                    } else {
-                        strcpy(simbolo_opr, "smaior");
-                        adicionarNo(&listaTokens, lexema_opr, simbolo_opr);
-                    }
-                    break;
-
-                case '=':
-                    strcpy(simbolo_opr, "sig");
-                    lexema_opr[1] = '\0';
-                    adicionarNo(&listaTokens, lexema_opr, simbolo_opr);
-                    ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
-                    break;
-
-                default:
-                    printf("\n\nERRO NA LEITURA DOS OPERADORES RELACIONAIS");
-            }
-
-        }
-        //TRATA PONTUACAO
-        else if (ch == ';' || ch == ',' || ch == '(' || ch == ')' || ch == '.'){
-            printf("%c", ch);
-
-            char simbolo_pont[20];
-            char lexema_pont[5] = {0};
-
-            lexema_pont[0] = ch;
-
-            switch(ch){
-
-                case ';':
-                    strcpy(simbolo_pont, "sponto_virgula");
-                    adicionarNo(&listaTokens, lexema_pont, simbolo_pont);
-                    ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
-                    break;
-
-                case ',':
-                    strcpy(simbolo_pont, "svirgula");
-                    adicionarNo(&listaTokens, lexema_pont, simbolo_pont);
-                    ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
-                    break;
-
-                case '(':
-                    strcpy(simbolo_pont, "sabre_parenteses");
-                    adicionarNo(&listaTokens, lexema_pont, simbolo_pont);
-                    ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
-                    break;
-
-                case ')':
-                    strcpy(simbolo_pont, "sfecha_parenteses");
-                    adicionarNo(&listaTokens, lexema_pont, simbolo_pont);
-                    ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
-                    break;
-
-                case '.':
-                    strcpy(simbolo_pont, "sponto");
-                    adicionarNo(&listaTokens, lexema_pont, simbolo_pont);
-                    ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
-                    break;
-            }
-
-        }
-        //ERRO
-        else {
-            printf("\nCaracter invalido: %c\nLinha %d", ch, line_counter);
-            char simbolo[50] = {0};
-            char lexema[50] = {0};
-
-            strcpy(simbolo, "serro");
-            lexema[0] = ch;
-            adicionarNo(&listaTokens, lexema, simbolo);
-            ch = fgetc(fptr);
-        }
-        // printf("%c", ch);
+    }else{
+        printf("\nERRO! Esperava PROGRAMA na linha %d", line_counter);
     }
-
-    // FECHA O ARQUIVO
-    fclose(fptr);
-
-
-    // adicionarNo(&listaTokens, "teste1", "PONTUACAO");
-    // adicionarNo(&listaTokens, "teste2", "DIGITO");
-    // adicionarNo(&listaTokens, "teste3", "LETRA");
-
-    // Imprime os tokens armazenados
-    Node* temp = listaTokens;
-    while(temp != NULL) {
-        printf("\nLexema: %s, Simbolo: %s\n", temp->token.lexema, temp->token.simbolo);
-        temp = temp->proximo;
-    }*/
+    
     return 0;
 }
