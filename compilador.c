@@ -197,7 +197,7 @@ void TrataAtribuicao(){
 
     strcpy(token.lexema, lexema);
     strcpy(token.simbolo, simbolo);
-            
+
     return;
 }
 
@@ -218,7 +218,7 @@ void TratarOperadorRelacional(){
                 strcpy(token.lexema, lexema_opr);
                 strcpy(token.simbolo, simbolo_opr);
                 ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
-            
+
             } else {
                 printf("\n\nTOKEN INVALIDO");
             }
@@ -265,7 +265,7 @@ void TratarOperadorRelacional(){
         default:
             printf("\n\nERRO NA LEITURA DOS OPERADORES RELACIONAIS");
         }
-    
+
     return;
 }
 
@@ -311,14 +311,14 @@ void TrataPontuacao(){
             ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
             break;
     }
-    
-    return;         
+
+    return;
 }
 
 void trataOperadorAritmetico(){
     char simbolo_arit[7];
     char lexema_arit[5] = {0};
-    
+
     lexema_arit[0] = ch;
     switch(ch){
         case '+':
@@ -336,12 +336,12 @@ void trataOperadorAritmetico(){
         default:
             printf("\n\nERRO AO ATRIBUIR SIMBOLO");
     }
-    
+
     ch = fgetc(fptr); //le mais um para deixar o proximo caractere pronto
 
     strcpy(token.lexema, lexema_arit);
     strcpy(token.simbolo, simbolo_arit);
-            
+
     return;
 }
 
@@ -352,13 +352,13 @@ void AnalisadorLexical(){
 
     if(ch == EOF)
         return;
-        
-    // TRATA DIGITO    
+
+    // TRATA DIGITO
     if (isdigit(ch)){
         TratarDigito();
 
     }
-        
+
     //TRATA IDENTIFICADOR PALAVRA RESERVADA
     else if (isalpha(ch)){
         TratarIdentificador_PalavraReservada();
@@ -371,7 +371,7 @@ void AnalisadorLexical(){
         //TRATA OPERADOR ARITMETICO
     else if (ch == '+' || ch == '-' || ch == '*'){
         trataOperadorAritmetico();
-    } 
+    }
 
     //TRATA OPERADOR RELACIONAL
     else if (ch == '!' || ch == '<' || ch == '>' || ch == '='){
@@ -395,10 +395,9 @@ void AnalisadorLexical(){
 
 
 void analisa_chamada_procedimento(){
-    if(strcmp(token.simbolo, "sidentificador") == 0){
-        AnalisadorLexical();
-    }else{
-        printf("ERRO! [ Analisa_chamada_funcao ]- diferente de indentificador linha:%d", line_counter);
+
+    if(strcmp(token.simbolo, "sponto_virgula") == 1){
+        printf("ERRO! [ Analisa_chamada_procedimento ]- diferente de identificador linha:%d", line_counter);
     }
 }
 
@@ -407,7 +406,7 @@ void analisa_chamada_funcao(){
     if(strcmp(token.simbolo, "sidentificador") == 0){
         AnalisadorLexical();
     }else{
-        printf("ERRO! [ Analisa_chamada_funcao ]- diferente de indentificador linha:%d", line_counter);
+        printf("ERRO! [ Analisa_chamada_funcao ]- diferente de identificador linha:%d", line_counter);
     }
 }
 
@@ -416,7 +415,7 @@ void analisa_chamada_funcao(){
 void analisa_escreva(){
     //Feito
     AnalisadorLexical();
-    
+
     if(strcmp(token.simbolo, "sabre_parenteses") == 0){
         AnalisadorLexical();
         if(strcmp(token.simbolo, "sidentificador") == 0){
@@ -447,18 +446,18 @@ void analisa_leia(){
 
         AnalisadorLexical();
         if(strcmp(token.simbolo, "sidentificador") == 0){
-            
+
             AnalisadorLexical();
             if(strcmp(token.simbolo, "sfecha_parenteses") == 0){
                 AnalisadorLexical();
             }else{
                 printf("ERRO!: [ analisa_leia] Diferente de fecha parenteses  Linha:%d", line_counter);
             }
-            
+
         }else{
-           printf("ERRO!: [ analisa_leia ] Diferente indentificador  Linha:%d", line_counter); 
+           printf("ERRO!: [ analisa_leia ] Diferente indentificador  Linha:%d", line_counter);
         }
-        
+
     }else{
         printf("ERRO!: [ analisa_leia ] Diferente de abre parenteses  Linha:%d", line_counter);
     }
@@ -469,7 +468,6 @@ void analisa_atribuicao(){
     AnalisadorLexical();
 
     analisa_expressao();
-    printf("[%s] $$--$$ [%s]", token.lexema, token.simbolo);
 }
 
 
@@ -509,34 +507,31 @@ void analisa_comando_simples(){
     else{
         analisa_comandos();
     }
-    
+
 }
 
 
 
 void analisa_comandos(){
     //Feito
-    if(strcmp(token.simbolo, "sinicio") == 0){ 
+    if(strcmp(token.simbolo, "sinicio") == 0){
         AnalisadorLexical();
         analisa_comando_simples();
-        printf("sadlksadlkasd");
         while (strcmp(token.simbolo, "sfim") != 0)
         {
             Sleep(2);
-            printf("[%s] [%s] -- ", token.lexema, token.simbolo);
             if(strcmp(token.simbolo, "sponto_virgula") == 0){
                 AnalisadorLexical();
                 if(strcmp(token.simbolo, "sfim") != 0){
                     analisa_comando_simples();
-                    printf("\n\n [%s]   ~~~   [%s]\n\n", token.lexema, token.simbolo);
-                } 
+                }
             }else{
                 printf("ERRO! [ analisa_comandos ] - analisa comandos Esperava ponto e virgula na linha %d", line_counter);
             }
         }
-        
+
         AnalisadorLexical();
-        
+
     } else {
         printf("ERRO! [ analisa_comandos ] esperava sinicio na linha %d", line_counter);
     }
@@ -576,7 +571,7 @@ void analisa_variaveis(){
             Sleep(2);
             printf("ERRO!: [ Analisa_variaveis ] - diferente de indentificador - Linha:%d TOKEN: %s", line_counter, token.simbolo);
         }
-        
+
     }while(strcmp(token.simbolo, "sdoispontos") != 0);
 
     AnalisadorLexical();
@@ -599,7 +594,7 @@ void analisa_et_variaveis(){
                     printf("ERRO!: [ analisa_et_variaveis ] - diferente de ponto e virgula - Linha:%d", line_counter);
                 }
             }
-            
+
         }else{
             printf("ERRO!: [ Analisa_et_variaveis ]- diferente de indetificador - Linha:%d", line_counter);
         }
@@ -662,8 +657,8 @@ void analisa_subrotinas(){
             printf("ERRO! [ analisa_subrotinas ] Esperava ponto e virgula na linha %d", line_counter);
         }
     }
-    
-    
+
+
 }
 
 void analisa_declaracao_procedimento(){
@@ -706,7 +701,7 @@ void analisa_declaracao_funcao(){
 
 
 
-// da pra fazer 
+// da pra fazer
 void analisa_expressao(){
     //feito
     analisa_expressao_simples();
@@ -736,7 +731,7 @@ void analisa_expressao_simples(){
 void analisa_termo(){
     //feito
     analisa_fator();
-    
+
     while(strcmp(token.simbolo, "smult") == 0 || strcmp(token.simbolo, "sdiv") == 0 || strcmp(token.simbolo, "se") == 0){
         AnalisadorLexical();
         analisa_fator();
@@ -761,7 +756,7 @@ void analisa_fator(){
     } else if (strcmp(token.simbolo, "sabre_parenteses") == 0){
         AnalisadorLexical();
         analisa_expressao();
-        
+
         if(strcmp(token.simbolo, "sfecha_parenteses") == 0){
             AnalisadorLexical();
         } else {
@@ -780,8 +775,8 @@ void analisa_fator(){
 
 
 int main(){
-    
-    
+
+
     // Abre o arquivo "new 1.txt" com permissão de leitura
     fptr = fopen("new 1.txt", "r");
 
@@ -793,7 +788,7 @@ int main(){
     ch = fgetc(fptr);
 
     //Lembre de while != EOF
- 
+
     AnalisadorLexical();
 
     if(strcmp(token.simbolo, "sprograma") == 0){
@@ -804,10 +799,13 @@ int main(){
             if(strcmp(token.simbolo, "sponto_virgula") == 0){
                 analisa_bloco();
                 if(strcmp(token.simbolo, "sponto") == 0){
-                    
+
+                    AnalisadorLexical();
+
                     if(ch == EOF){
                         printf("Sucesso!");
-                    }else{
+
+                    }else {
                         printf("ERRO!: Diferente de End of File.  Linha:%d", line_counter);
                     }
 
@@ -815,20 +813,20 @@ int main(){
                 }else {
                     printf("ERRO!: Diferente de Ponto.  Linha:%d", line_counter);
                 }
-                
-                
+
+
             }else{
                 printf("ERRO!: Diferente de Ponto e virgula.  Linha:%d", line_counter);
             }
-                
+
 
         }else{
             printf("\nERRO! Faltou identificador do programa na linha %d", line_counter);
         }
-        
+
     }else{
         printf("\nERRO! Esperava PROGRAMA na linha %d", line_counter);
     }
-    
+
     return 0;
 }
