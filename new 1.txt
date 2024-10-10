@@ -18,7 +18,7 @@ inicio
  faca inicio
  valor:= valor*(1+juro);
  i:= i+1;
- fim 
+ fim;
  escreva(valor);
-fim
+fim;
 fim.

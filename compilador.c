@@ -5,6 +5,66 @@
 #include <ctype.h>
 #include <windows.h>
 
+// Definição da struct Identificador
+typedef struct Identificador {
+    char nome[50];      // Nome do identificador (lexema)
+    char escopo[50];    // Nome do escopo (procedimento ou função)
+    char tipo[20];      // Tipo do identificador (int, float, etc.)
+    void* memoria;      // Endereço de memória alocado
+    struct Identificador* proximo; // Ponteiro para o próximo identificador
+} Identificador;
+
+// Função para criar um novo nó de identificador
+Identificador* criarIdentificador(const char* nome, const char* escopo, const char* tipo, void* memoria) {
+    Identificador* novoIdentificador = (Identificador*) malloc(sizeof(Identificador));
+    if (novoIdentificador != NULL) {
+        strncpy(novoIdentificador->nome, nome, sizeof(novoIdentificador->nome));
+        strncpy(novoIdentificador->escopo, escopo, sizeof(novoIdentificador->escopo));
+        strncpy(novoIdentificador->tipo, tipo, sizeof(novoIdentificador->tipo));
+        novoIdentificador->memoria = memoria;
+        novoIdentificador->proximo = NULL;
+    }
+    return novoIdentificador;
+}
+
+// Função para inserir um identificador no início da lista (mais recente primeiro)
+void inserirIdentificador(Identificador** head, const char* nome, const char* escopo, const char* tipo, void* memoria) {
+    Identificador* novoIdentificador = criarIdentificador(nome, escopo, tipo, memoria);
+    novoIdentificador->proximo = *head;  // O novo identificador aponta para o antigo primeiro
+    *head = novoIdentificador;           // O novo identificador se torna o primeiro da lista
+}
+
+// Função para buscar um identificador na lista (do mais recente ao mais antigo)
+Identificador* buscarIdentificador(Identificador* head, const char* nome) {
+    Identificador* atual = head;
+    while (atual != NULL) {
+        if (strcmp(atual->nome, nome) == 0) {
+            return atual;
+        }
+        atual = atual->proximo;
+    }
+    return NULL;  // Se não encontrar, retorna NULL
+}
+
+// Função para imprimir a tabela de símbolos
+void imprimirTabelaSimbolos(Identificador* head) {
+    Identificador* atual = head;
+    while (atual != NULL) {
+        printf("Nome: %s, Escopo: %s, Tipo: %s, Endereço: %p\n", 
+               atual->nome, atual->escopo, atual->tipo, atual->memoria);
+        atual = atual->proximo;
+    }
+}
+
+// Função para liberar a memória da lista de identificadores
+void liberarTabelaSimbolos(Identificador* head) {
+    Identificador* atual = head;
+    while (atual != NULL) {
+        Identificador* temp = atual;
+        atual = atual->proximo;
+        free(temp);  // Libera a memória do nó atual
+    }
+}
 
 void analisa_chamada_procedimento();
 void analisa_chamada_funcao();
@@ -776,6 +836,34 @@ void analisa_fator(){
 
 int main(){
 
+    // Cabeça da lista de identificadores (tabela de símbolos)
+    Identificador* tabelaSimbolos = NULL;
+
+
+    // Exemplo de variáveis a serem inseridas
+    int x = 10;
+    float y = 5.5;
+
+    // Inserir identificadores com escopos (nome do procedimento ou função)
+    inserirIdentificador(&tabelaSimbolos, "variavelX", "main", "int", &x);
+    inserirIdentificador(&tabelaSimbolos, "variavelY", "funcaoA", "float", &y);
+
+    // Imprimir a tabela de símbolos
+    printf("Tabela de Símbolos:\n");
+    imprimirTabelaSimbolos(tabelaSimbolos);
+
+    // Buscar um identificador na tabela
+    Identificador* encontrado = buscarIdentificador(tabelaSimbolos, "variavelX");
+    if (encontrado != NULL) {
+        printf("\nIdentificador encontrado:\n");
+        printf("Nome: %s, Escopo: %s, Tipo: %s, Endereço: %p\n", 
+               encontrado->nome, encontrado->escopo, encontrado->tipo, encontrado->memoria);
+    } else {
+        printf("\nIdentificador não encontrado!\n");
+    }
+
+    // Liberar a memória da tabela de símbolos
+    liberarTabelaSimbolos(tabelaSimbolos);
 
     // Abre o arquivo "new 1.txt" com permissão de leitura
     fptr = fopen("new 1.txt", "r");
