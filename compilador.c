@@ -80,7 +80,6 @@ void coloca_tipo(Identificador** head, const char* tipo) {
     Identificador* atual = *head;
     Identificador* anterior = NULL;
 
-    // Percorrer a lista até encontrar a "MARCA"
     while (atual != NULL) {
         if (strcmp(atual->tipo, "variavel") == 0){
             strcpy(atual->tipo, tipo);
@@ -106,6 +105,34 @@ void coloca_tipo_func (Identificador** head, const char* lexema, const char* tip
         atual = atual->proximo;
     }
 }
+
+boolean buscaAteMarcaPrimeiraOcorrencia(Identificador** head, const char* lexema) {
+
+    Identificador* atual = *head;
+
+    printf("Buscando ate encontrar o lexema  %s ou a marca...\n", lexema);
+
+    // Percorrer a lista até encontrar o lexema ou a "MARCA" (escopo == "L")
+    while (atual != NULL) {
+        // Verificar se o identificador atual tem o mesmo nome (lexema)
+        if (strcmp(atual->nome, lexema) == 0) {
+            printf("Lexema encontrado: %s.\n", atual->nome);
+            return 1; // Verdadeiro, achou o lexema
+        }
+        // Verificar se atingimos a marca ("L")
+        if (strcmp(atual->escopo, "L") == 0) {
+            printf("Marca encontrada. Parando a busca.\n");
+            return 0; // Falso, encontrou a marca antes do lexema
+        }
+
+        // Ir para o próximo nó
+        atual = atual->proximo;
+    }
+
+    printf("Nenhuma marca ou lexema encontrado.\n");
+    return 0; // Falso, não achou nem o lexema nem a marca
+}
+
 
 // Função para imprimir a tabela de símbolos
 void imprimirTabelaSimbolos(Identificador* head) {
@@ -525,11 +552,11 @@ void analisa_chamada_procedimento(){
 }
 
 void analisa_chamada_funcao(){
-    AnalisadorLexical();
+    // AnalisadorLexical();
     if(strcmp(token.simbolo, "sidentificador") == 0){
         AnalisadorLexical();
     }else{
-        printf("ERRO! [ Analisa_chamada_funcao ]- diferente de identificador linha:%d", line_counter);
+        printf("ERRO! [ Analisa_chamada_funcao ]- diferente de identificador %s linha:%d",token.lexema, line_counter);
     }
 }
 
@@ -694,8 +721,8 @@ void analisa_variaveis(){
     //Feito
     do{
         if(strcmp(token.simbolo, "sidentificador") == 0){
-            Identificador* encontrado = buscarIdentificador(tabelaSimbolos, token.lexema);
-            if(encontrado == NULL){
+            // Identificador* encontrado = buscarIdentificador(tabelaSimbolos, token.lexema);
+            if(buscaAteMarcaPrimeiraOcorrencia(&tabelaSimbolos, token.lexema) == 0){
                 inserirIdentificador(&tabelaSimbolos, token.lexema, "", "variavel", &token.lexema);
                 AnalisadorLexical();
                 if(strcmp(token.simbolo, "svirgula") == 0 || strcmp(token.simbolo, "sdoispontos") == 0){
@@ -712,6 +739,7 @@ void analisa_variaveis(){
                 }
             }else{
                 printf("ERRO SEMANTICO!: [Analisa_variaveis] - encontrou um indentificador que não devia ");
+                exit(0);
             }
 
         }else{
