@@ -1,0 +1,6 @@
+programa test;
+var v, valor: inteiro;
+ i,max, juro,: inteiro;
+
+ funcao teste: inteiro;
+ var x, y, z: inteiro;

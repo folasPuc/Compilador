@@ -5,6 +5,7 @@
 #include <ctype.h>
 #include <windows.h>
 
+
 // Definição da struct Identificador
 typedef struct Identificador {
     char nome[50];      // Nome do identificador (lexema)
@@ -46,12 +47,73 @@ Identificador* buscarIdentificador(Identificador* head, const char* nome) {
     return NULL;  // Se não encontrar, retorna NULL
 }
 
+// Função para desempilhar até a primeira marca (tipo == "L")
+void desempilharAteMarca(Identificador** head) {
+    Identificador* atual = *head;
+    Identificador* anterior = NULL;
+
+    printf("Iniciando desempilhamento até a marca...\n");
+
+    // Percorrer a lista até encontrar a "MARCA" ("L")
+    while (atual != NULL && strcmp(atual->escopo, "L") != 0) {
+        anterior = atual;
+        atual = atual->proximo;
+        printf("Desempilhando identificador: %s %s\n", anterior->nome, anterior->tipo);
+        free(anterior);  // Liberar a memória do identificador desempilhado
+    }
+
+    // Se encontramos a marca
+    if (atual != NULL) {
+        printf("Marca encontrada: %s. Removendo marca...\n", atual->nome);
+        strcpy(atual->escopo, "");  // Remover a marca, não o nó
+    } else {
+        printf("Nenhuma marca encontrada. A lista foi esvaziada.\n");
+    }
+
+    // Atualizar o head para o nó atual (marca ou NULL se esvaziado)
+    *head = atual;
+}
+
+
+
+void coloca_tipo(Identificador** head, const char* tipo) {
+    Identificador* atual = *head;
+    Identificador* anterior = NULL;
+
+    // Percorrer a lista até encontrar a "MARCA"
+    while (atual != NULL) {
+        if (strcmp(atual->tipo, "variavel") == 0){
+            strcpy(atual->tipo, tipo);
+        }
+
+
+        anterior = atual;
+        atual = atual->proximo;
+    }
+}
+
+void coloca_tipo_func (Identificador** head, const char* lexema, const char* tipo){
+    Identificador* atual = *head;
+    Identificador* anterior = NULL;
+
+    while (atual != NULL) {
+        if (strcmp(atual->nome, lexema) == 0){
+            strcpy(atual->tipo, tipo);
+            break;
+        }
+
+        anterior = atual;
+        atual = atual->proximo;
+    }
+}
+
 // Função para imprimir a tabela de símbolos
 void imprimirTabelaSimbolos(Identificador* head) {
     Identificador* atual = head;
     while (atual != NULL) {
         printf("Nome: %s, Escopo: %s, Tipo: %s, Endereço: %p\n", 
                atual->nome, atual->escopo, atual->tipo, atual->memoria);
+               
         atual = atual->proximo;
     }
 }
@@ -92,6 +154,7 @@ void analisa_fator();
 int line_counter = 1;
 FILE *fptr;
 char ch;
+Identificador* tabelaSimbolos = NULL;
 
 typedef struct {
     char lexema[50];
@@ -479,6 +542,12 @@ void analisa_escreva(){
     if(strcmp(token.simbolo, "sabre_parenteses") == 0){
         AnalisadorLexical();
         if(strcmp(token.simbolo, "sidentificador") == 0){
+            Identificador* encontrado = buscarIdentificador(tabelaSimbolos, token.lexema);
+            if (encontrado == NULL) {
+                //nao encontrou, da erro
+                printf("[Analisa escreva] - Identificador nao declarado na linha %d", line_counter);
+                return;
+            }
             AnalisadorLexical();
             if(strcmp(token.simbolo, "sfecha_parenteses") == 0){
                 AnalisadorLexical(); //
@@ -506,7 +575,12 @@ void analisa_leia(){
 
         AnalisadorLexical();
         if(strcmp(token.simbolo, "sidentificador") == 0){
-
+            Identificador* encontrado = buscarIdentificador(tabelaSimbolos, token.lexema);
+            if (encontrado == NULL) {
+                //nao encontrou, da erro
+                printf("[Analisa leia] - Identificador nao declarado na linha %d", line_counter);
+                return;
+            }
             AnalisadorLexical();
             if(strcmp(token.simbolo, "sfecha_parenteses") == 0){
                 AnalisadorLexical();
@@ -603,8 +677,15 @@ void analisa_tipo(){
     if( (strcmp(token.simbolo, "sinteiro") != 0) && (strcmp(token.simbolo, "sbooleano") != 0)){
         printf("ERRO!: [ analisa_tipo ]  tipo invalido : %d", line_counter);
         return;
-    }
+    }else{
 
+        coloca_tipo(&tabelaSimbolos, token.lexema);
+
+        //Identificador* encontrado = buscarIdentificador(tabelaSimbolos, token.lexema);
+        printf("%s\n\n", token.lexema);
+        
+    }
+    
     AnalisadorLexical();
 }
 
@@ -613,18 +694,24 @@ void analisa_variaveis(){
     //Feito
     do{
         if(strcmp(token.simbolo, "sidentificador") == 0){
-            AnalisadorLexical();
-            if(strcmp(token.simbolo, "svirgula") == 0 || strcmp(token.simbolo, "sdoispontos") == 0){
+            Identificador* encontrado = buscarIdentificador(tabelaSimbolos, token.lexema);
+            if(encontrado == NULL){
+                inserirIdentificador(&tabelaSimbolos, token.lexema, "", "variavel", &token.lexema);
+                AnalisadorLexical();
+                if(strcmp(token.simbolo, "svirgula") == 0 || strcmp(token.simbolo, "sdoispontos") == 0){
 
-                if(strcmp(token.simbolo, "svirgula") == 0){
-                    AnalisadorLexical();
+                    if(strcmp(token.simbolo, "svirgula") == 0){
+                        AnalisadorLexical();
 
-                    if(strcmp(token.simbolo, "sdoispontos") == 0){
-                        printf("ERRO!: [ Analisa_variaveis ] - diferente de dois pontos - Linha:%d", line_counter);
+                        if(strcmp(token.simbolo, "sdoispontos") == 0){
+                            printf("ERRO!: [ Analisa_variaveis ] - diferente de dois pontos - Linha:%d", line_counter);
+                        }
                     }
+                }else{
+                    printf("ERRO!: [ Analisa_variaveis ] - diferente de dois pontos e virgula - Linha:%d", line_counter);
                 }
             }else{
-                printf("ERRO!: [ Analisa_variaveis ] - diferente de dois pontos e virgula - Linha:%d", line_counter);
+                printf("ERRO SEMANTICO!: [Analisa_variaveis] - encontrou um indentificador que não devia ");
             }
 
         }else{
@@ -724,7 +811,15 @@ void analisa_subrotinas(){
 void analisa_declaracao_procedimento(){
     //Feito
     AnalisadorLexical();
+    char nivel[3] = "L";
     if(strcmp(token.simbolo, "sidentificador") == 0){
+        Identificador* encontrado = buscarIdentificador(tabelaSimbolos, token.lexema);
+        if (encontrado != NULL){
+            //Encontrou
+            printf("[Analisa declaracao procedimento] - Procedimento ja declarado, linha %d", line_counter);
+            return;
+        }
+        inserirIdentificador(&tabelaSimbolos, token.lexema, "procedimento", nivel, &token.lexema);
         AnalisadorLexical();
         if(strcmp(token.simbolo, "sponto_virgula") == 0){
             analisa_bloco();
@@ -734,29 +829,50 @@ void analisa_declaracao_procedimento(){
     }else{
         printf("ERRO! [analisa_declaracao_procedimento] identificador na linha %d", line_counter);
     }
+
+    //DESEMPILHA
+    desempilharAteMarca(&tabelaSimbolos);
 }
 
 void analisa_declaracao_funcao(){
     //Feito
     AnalisadorLexical();
+    char nome_funcao[50];
+    char nivel[3] = "L";
+
     if(strcmp(token.simbolo, "sidentificador") == 0){
-        AnalisadorLexical();
-        if(strcmp(token.simbolo, "sdoispontos") == 0){
+        Identificador* encontrado = buscarIdentificador(tabelaSimbolos, token.lexema);
+        if(encontrado == NULL) {
+            inserirIdentificador(&tabelaSimbolos, token.lexema, nivel, "",&token.lexema);
+            strcpy(nome_funcao, token.lexema);
             AnalisadorLexical();
-            if( (strcmp(token.simbolo, "sinteiro") == 0) || (strcmp(token.simbolo, "sbooleano") == 0) ){
+
+            if(strcmp(token.simbolo, "sdoispontos") == 0){
                 AnalisadorLexical();
-                if(strcmp(token.simbolo, "sponto_virgula") == 0){
-                    analisa_bloco();
+                if( (strcmp(token.simbolo, "sinteiro") == 0) || (strcmp(token.simbolo, "sbooleano") == 0) ){
+                    if (strcmp(token.simbolo, "sinteiro") == 0) {
+                        coloca_tipo_func(&tabelaSimbolos, nome_funcao, "funcao inteiro");
+                    }
+                    else { 
+                        coloca_tipo_func(&tabelaSimbolos, nome_funcao, "funcao booleano");
+                    }
+                    AnalisadorLexical();
+                    if(strcmp(token.simbolo, "sponto_virgula") == 0){
+                        analisa_bloco();
+                    }
+                } else {
+                    printf("ERRO! [ analisa_declaracao_funcao ] esperava tipo da funcao (inteiro ou booleano) na linha %d", line_counter);
                 }
-            }else {
-                printf("ERRO! [ analisa_declaracao_funcao ] esperava tipo da funcao (inteiro ou booleano) na linha %d", line_counter);
+            } else {
+                printf("ERRO!  [ analisa_declaracao_funcao ] esperava dois pontos na linha %d", line_counter);
             }
-        }else {
-            printf("ERRO!  [ analisa_declaracao_funcao ] esperava dois pontos na linha %d", line_counter);
+        } else {
+            printf("ERRO! [ analisa_declaracao_funcao ] Identificador nao foi encontrado na tabela %d", line_counter);
         }
-    }else {
+    } else {
         printf("ERRO! [ analisa_declaracao_funcao ] esperava identificador na linha %d", line_counter);
     }
+    desempilharAteMarca(&tabelaSimbolos);
 }
 
 
@@ -803,10 +919,22 @@ void analisa_termo(){
 void analisa_fator(){
 
     if(strcmp(token.simbolo, "sidentificador") == 0){
-        //troço azul
-        AnalisadorLexical();
-    } else if (strcmp(token.simbolo, "snumero") == 0){
+    
 
+        Identificador* encontrado = buscarIdentificador(tabelaSimbolos, token.lexema);
+        if (encontrado != NULL) {
+            // Faz o strcpy de token.lexema para encontrado->tipo
+            if(strcmp(encontrado->tipo, "funcao inteiro") == 0 || strcmp(encontrado->tipo, "funcao booleana") == 0){
+                analisa_chamada_funcao();
+            }else{
+                AnalisadorLexical();
+            }
+            
+        }else{
+            printf("ERRO! Semantico: [Analisa_fator] Identificador não encontrado\n");
+        }
+
+    } else if (strcmp(token.simbolo, "snumero") == 0){
         AnalisadorLexical();
 
     } else if (strcmp(token.simbolo, "snao") == 0){
@@ -837,7 +965,7 @@ void analisa_fator(){
 int main(){
 
     // Cabeça da lista de identificadores (tabela de símbolos)
-    Identificador* tabelaSimbolos = NULL;
+
 
 
     // Exemplo de variáveis a serem inseridas
@@ -845,28 +973,28 @@ int main(){
     float y = 5.5;
 
     // Inserir identificadores com escopos (nome do procedimento ou função)
-    inserirIdentificador(&tabelaSimbolos, "variavelX", "main", "int", &x);
-    inserirIdentificador(&tabelaSimbolos, "variavelY", "funcaoA", "float", &y);
+    // inserirIdentificador(&tabelaSimbolos, "variavelX", "main", "int", &x);
+    // inserirIdentificador(&tabelaSimbolos, "variavelY", "funcaoA", "float", &y);
 
     // Imprimir a tabela de símbolos
-    printf("Tabela de Símbolos:\n");
-    imprimirTabelaSimbolos(tabelaSimbolos);
+    // printf("Tabela de Símbolos:\n");
+    // imprimirTabelaSimbolos(tabelaSimbolos);
 
     // Buscar um identificador na tabela
-    Identificador* encontrado = buscarIdentificador(tabelaSimbolos, "variavelX");
-    if (encontrado != NULL) {
-        printf("\nIdentificador encontrado:\n");
-        printf("Nome: %s, Escopo: %s, Tipo: %s, Endereço: %p\n", 
-               encontrado->nome, encontrado->escopo, encontrado->tipo, encontrado->memoria);
-    } else {
-        printf("\nIdentificador não encontrado!\n");
-    }
+    // Identificador* encontrado = buscarIdentificador(tabelaSimbolos, "variavelX");
+    // if (encontrado != NULL) {
+    //     printf("\nIdentificador encontrado:\n");
+    //     printf("Nome: %s, Escopo: %s, Tipo: %s, Endereço: %p\n", 
+    //            encontrado->nome, encontrado->escopo, encontrado->tipo, encontrado->memoria);
+    // } else {
+    //     printf("\nIdentificador não encontrado!\n");
+    // }
 
     // Liberar a memória da tabela de símbolos
-    liberarTabelaSimbolos(tabelaSimbolos);
+    // liberarTabelaSimbolos(tabelaSimbolos);
 
     // Abre o arquivo "new 1.txt" com permissão de leitura
-    fptr = fopen("new 1.txt", "r");
+    fptr = fopen("CARALHO.txt", "r");
 
     // Faz a verificação do arquivo de leirura
     if (NULL == fptr) {
@@ -876,13 +1004,14 @@ int main(){
     ch = fgetc(fptr);
 
     //Lembre de while != EOF
-
+    printf("abri o arquivo penis caralho");
     AnalisadorLexical();
 
     if(strcmp(token.simbolo, "sprograma") == 0){
 
         AnalisadorLexical();
         if (strcmp(token.simbolo, "sidentificador") == 0){
+            inserirIdentificador(&tabelaSimbolos, token.lexema, "escopo - nada", "tipo - nomeDoPrograma", &token.lexema);
             AnalisadorLexical();
             if(strcmp(token.simbolo, "sponto_virgula") == 0){
                 analisa_bloco();
@@ -916,5 +1045,9 @@ int main(){
         printf("\nERRO! Esperava PROGRAMA na linha %d", line_counter);
     }
 
+    printf("Tabela de Símbolos:\n");
+    imprimirTabelaSimbolos(tabelaSimbolos);
+
+    liberarTabelaSimbolos(tabelaSimbolos);
     return 0;
 }
