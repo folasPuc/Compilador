@@ -819,7 +819,7 @@ void analisa_declaracao_procedimento(){
             printf("[Analisa declaracao procedimento] - Procedimento ja declarado, linha %d", line_counter);
             return;
         }
-        inserirIdentificador(&tabelaSimbolos, token.lexema, "procedimento", nivel, &token.lexema);
+        inserirIdentificador(&tabelaSimbolos, token.lexema, nivel, "procedimento", &token.lexema);
         AnalisadorLexical();
         if(strcmp(token.simbolo, "sponto_virgula") == 0){
             analisa_bloco();

@@ -2,5 +2,12 @@ programa test;
 var v, valor: inteiro;
  i,max, juro,: inteiro;
 
- funcao teste: inteiro;
- var x, y, z: inteiro;
+procedimento loop;         
+  var x, y, z: inteiro;
+  inicio
+    leia (x);   {para parar digite um valor maior que 9 }
+    se x < 10
+    entao ler;               
+  fim;
+
+fim
