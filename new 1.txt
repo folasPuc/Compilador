@@ -1,5 +1,6 @@
 programa test;
-var a,b,s: inteiro;                 
+var a,b,s: inteiro;
+    d: booleano;                
                               
  funcao soma: inteiro;
  var c,a,s: inteiro;                   
@@ -23,8 +24,7 @@ var a,b,s: inteiro;
   loop;                          
   soma:= c+a;
  fim;                                
-                                      
-
+                              
 inicio      {corpo principal}
   s:= soma;                              
   escreva(s)

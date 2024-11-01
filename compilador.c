@@ -155,6 +155,7 @@ void liberarTabelaSimbolos(Identificador* head) {
     }
 }
 
+
 void analisa_chamada_procedimento();
 void analisa_chamada_funcao();
 void analisa_escreva();
@@ -179,6 +180,8 @@ void analisa_fator();
 
 
 int line_counter = 1;
+char lista_infix[50] = {0};
+int listIndex = 0;
 FILE *fptr;
 char ch;
 Identificador* tabelaSimbolos = NULL;
@@ -189,6 +192,19 @@ typedef struct {
 } Token;
 
 Token token;
+
+
+void addListaInFix(const char* termo) {
+    strcat(lista_infix, termo); // Concatena o termo ao final de lista_infix
+}
+
+void listarListaInfix() {
+    printf("Lista infix: ");
+    // for (int i = 0; i < listIndex; i++) {
+    //     printf(lista_infix[i]);
+    // }
+    printf("%s", lista_infix);
+}
 
 char tratarEspacoComentario() {
     while ((ch == '{' || isspace(ch) || ch == '\t' || ch == '\n') && ch != EOF) {
@@ -544,16 +560,34 @@ void AnalisadorLexical(){
 // Abaixo os procedimentos do sintatioc
 
 
-void analisa_chamada_procedimento(){
+void analisa_chamada_procedimento(char identificador[50] ){
 
     if(strcmp(token.simbolo, "sponto_virgula") == 1){
         printf("ERRO! [ Analisa_chamada_procedimento ]- diferente de identificador linha:%d", line_counter);
     }
+
+    Identificador* encontrado = buscarIdentificador(tabelaSimbolos, identificador);
+        if (encontrado == NULL) {
+            //nao encontrou, da erro
+            printf("[analisa_chamada_procedimento] - procedimento nao declarado na linha %d", line_counter);
+            exit(0);
+        }
+
+
 }
 
 void analisa_chamada_funcao(){
     // AnalisadorLexical();
     if(strcmp(token.simbolo, "sidentificador") == 0){
+
+        Identificador* encontrado = buscarIdentificador(tabelaSimbolos, token.lexema);
+        if (encontrado == NULL) {
+            //nao encontrou, da erro
+            printf("[analisa_chamada_funcao] - funcao nao declarado na linha %d", line_counter);
+            exit(0);
+        }
+
+
         AnalisadorLexical();
     }else{
         printf("ERRO! [ Analisa_chamada_funcao ]- diferente de identificador %s linha:%d",token.lexema, line_counter);
@@ -573,7 +607,7 @@ void analisa_escreva(){
             if (encontrado == NULL) {
                 //nao encontrou, da erro
                 printf("[Analisa escreva] - Identificador nao declarado na linha %d", line_counter);
-                return;
+                exit(0);
             }
             AnalisadorLexical();
             if(strcmp(token.simbolo, "sfecha_parenteses") == 0){
@@ -635,11 +669,14 @@ void analisa_atribuicao(){
 void analisa_atrib_chprocedimento(){
     //Feito
     //CONSIDERANDO QUE TENHO UM SIDENTIFICADOR NO TOKEN
+    char auxiliar[50];
+    strcpy(auxiliar, token.lexema);
+    
     AnalisadorLexical();
     if(strcmp(token.simbolo, "satribuicao") == 0){
         analisa_atribuicao();
     }else{
-        analisa_chamada_procedimento();
+        analisa_chamada_procedimento(auxiliar);
     }
 
 }
@@ -687,6 +724,7 @@ void analisa_comandos(){
                     analisa_comando_simples();
                 }
             }else{
+                printf("[%s] -- [%s]", token.simbolo, token.lexema);
                 printf("ERRO! [ analisa_comandos ] - analisa comandos Esperava ponto e virgula na linha %d", line_counter);
             }
         }
@@ -908,8 +946,14 @@ void analisa_declaracao_funcao(){
 // da pra fazer
 void analisa_expressao(){
     //feito
+
+    //colocar na lista
+    addListaInFix(token.lexema);
+    printf("Token que chega analisa expressao %s", token.lexema);
+
     analisa_expressao_simples();
     if( (strcmp(token.simbolo, "smaior") == 0) || (strcmp(token.simbolo, "smaiorig") == 0) || (strcmp(token.simbolo, "sig") == 0) || (strcmp(token.simbolo, "smenor") == 0) || (strcmp(token.simbolo, "smenorig") == 0) || (strcmp(token.simbolo, "sdif") == 0)){
+        addListaInFix(token.lexema);
         AnalisadorLexical();
         analisa_expressao_simples();
     }
@@ -920,13 +964,20 @@ void analisa_expressao(){
 // da pra fazer
 void analisa_expressao_simples(){
     //feito
-    if((strcmp(token.simbolo, "smais") == 0) || (strcmp(token.simbolo, "smenos") == 0))
+    if((strcmp(token.simbolo, "smais") == 0) || (strcmp(token.simbolo, "smenos") == 0)) { 
+        //sinal
+        
         AnalisadorLexical();
+    }
 
     analisa_termo();
 
     while((strcmp(token.simbolo, "smais") == 0) || (strcmp(token.simbolo, "smenos") == 0) || (strcmp(token.simbolo, "sou") == 0)){
+        addListaInFix(token.lexema);
         AnalisadorLexical();
+        addListaInFix(token.lexema);
+        //coloca na lista
+        // addListaInFix(token.lexema);
         analisa_termo();
     }
 }
@@ -938,6 +989,8 @@ void analisa_termo(){
 
     while(strcmp(token.simbolo, "smult") == 0 || strcmp(token.simbolo, "sdiv") == 0 || strcmp(token.simbolo, "se") == 0){
         AnalisadorLexical();
+        //coloca na lista
+        addListaInFix(token.lexema);
         analisa_fator();
     }
 }
@@ -956,31 +1009,44 @@ void analisa_fator(){
                 analisa_chamada_funcao();
             }else{
                 AnalisadorLexical();
+                //coloca na lista
+                // addListaInFix(token.lexema);
+                // printf("Token que chega aqui %s", token.lexema);
             }
             
         }else{
-            printf("ERRO! Semantico: [Analisa_fator] Identificador não encontrado\n");
+            printf("ERRO! funcao nao declarada na linha %d\n", line_counter);
+            exit(0);
         }
 
     } else if (strcmp(token.simbolo, "snumero") == 0){
+        addListaInFix(token.lexema);
         AnalisadorLexical();
 
     } else if (strcmp(token.simbolo, "snao") == 0){
         AnalisadorLexical();
+        //coloca na lista
+        addListaInFix(token.lexema);
         analisa_fator();
 
     } else if (strcmp(token.simbolo, "sabre_parenteses") == 0){
         AnalisadorLexical();
+        //coloca na lista
+        addListaInFix(token.lexema);
         analisa_expressao();
 
         if(strcmp(token.simbolo, "sfecha_parenteses") == 0){
             AnalisadorLexical();
+            //coloca na lista
+            addListaInFix(token.lexema);
         } else {
             printf("\n\n ERRO -- Falta de fechar parenteses\n\n");
         }
 
     } else if ((strcmp(token.lexema, "verdadeiro") == 0) || (strcmp(token.lexema, "falso") == 0)){
         AnalisadorLexical();
+        //coloca lista
+        addListaInFix(token.lexema);
 
     } else {
         printf("\n\n ERRO -- ");
@@ -1077,5 +1143,8 @@ int main(){
     imprimirTabelaSimbolos(tabelaSimbolos);
 
     liberarTabelaSimbolos(tabelaSimbolos);
+
+    printf("\nLista Infix: \n");
+    listarListaInfix();
     return 0;
 }
