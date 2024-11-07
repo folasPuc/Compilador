@@ -23,7 +23,7 @@ fim;
   var x, y, z: inteiro;
   inicio
     leia (x);   {para parar digite um valor maior que 9 }
-    se (x + 5 ou y - 2)
+    se (-x + 5 < (-y + 3))
     entao ler;               
   fim; 
   

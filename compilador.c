@@ -138,9 +138,9 @@ boolean buscaAteMarcaPrimeiraOcorrencia(Identificador** head, const char* lexema
 void imprimirTabelaSimbolos(Identificador* head) {
     Identificador* atual = head;
     while (atual != NULL) {
-        printf("Nome: %s, Escopo: %s, Tipo: %s, Endereço: %p\n", 
+        printf("Nome: %s, Escopo: %s, Tipo: %s, Endereço: %p\n",
                atual->nome, atual->escopo, atual->tipo, atual->memoria);
-               
+
         atual = atual->proximo;
     }
 }
@@ -180,7 +180,7 @@ void analisa_fator();
 
 
 int line_counter = 1;
-char lista_infix[50] = {0};
+char lista_infix[50][50]; // Agora uma matriz para armazenar até 50 lexemas
 int listIndex = 0;
 FILE *fptr;
 char ch;
@@ -195,103 +195,111 @@ Token token;
 
 
 void addListaInFix(const char* termo) {
-    strcat(lista_infix, termo); // Concatena o termo ao final de lista_infix
+    if (listIndex < 50) { // Verifica se a lista tem espaço para mais lexemas
+        strncpy(lista_infix[listIndex], termo, 50); // Copia o termo para a posição da lista
+        listIndex++;
+    } else {
+        printf("Erro: Lista de infix está cheia!\n");
+    }
 }
 
+// Função para listar todos os lexemas armazenados na lista de infix
 void listarListaInfix() {
-    printf("Lista infix: ");
-    // for (int i = 0; i < listIndex; i++) {
-    //     printf(lista_infix[i]);
-    // }
-    printf("%s\n", lista_infix);
+    printf("Lista infix: \n");
+    for (int i = 0; i < listIndex; i++) {
+        printf("%s\n", lista_infix[i]); // Imprime cada lexema
+    }
 }
 
+// Função para resetar a lista de infix (limpar a lista)
 void resetListaInfix() {
-    lista_infix[0] = '\0';  // Define o primeiro caractere como nulo, "limpando" a string
-}
+    // Resetando o índice para 0, indicando que a lista está vazia
+    listIndex = 0;
 
+    // Opcional: Limpar a matriz de lexemas (não necessário se só resetarmos o índice)
+    for (int i = 0; i < 50; i++) {
+        lista_infix[i][0] = '\0'; // Limpa cada posição da matriz de lexemas
+    }
+
+    printf("Lista infix foi resetada!\n");
+}
 //PORRA
-
+// Função para obter a precedência de um operador
 int prec(const char* op) {
-    if (strcmp(op, "u") == 0 || strcmp(op, "*") == 0 || strcmp(op, "div") == 0 || strcmp(op, "+") == 0 || strcmp(op, "-") == 0)
+    printf("Operador op: [%s]\n", op);
+    // Precedência de operadores aritméticos
+    if (strcmp(op, "+-u") == 0)      // Precedência maior (positivo e negativo)
+        return 7;
+    else if (strcmp(op, "*") == 0 || strcmp(op, "div") == 0) // Precedência média (multiplicação e divisão)
+        return 6;
+    else if (strcmp(op, "+") == 0 || strcmp(op, "-") == 0) {  // Precedência menor (soma e subtração)
+        return 5;
+    }
+
+    // Precedência de operadores relacionais (todos têm a mesma precedência)
+    else if (strcmp(op, ">") == 0 || strcmp(op, ">=") == 0 ||
+             strcmp(op, "<") == 0 || strcmp(op, "<=") == 0 ||
+             strcmp(op, "=") == 0 || strcmp(op, "!=") == 0) {
+        return 4;
+    }
+
+    // Precedência de operadores lógicos (nao, e, ou)
+    else if (strcmp(op, "nao") == 0) { // Maior precedência (negação)
         return 3;
-    else if (strcmp(op, ">") == 0 || strcmp(op, ">=") == 0 || strcmp(op, "<") == 0 || strcmp(op, "<=") == 0 || strcmp(op, "=") == 0 || strcmp(op, "!=") == 0)
+    }
+    else if (strcmp(op, "e") == 0)    // Precedência média (AND)
         return 2;
-    else if (strcmp(op, "nao") == 0 || strcmp(op, "e") == 0 || strcmp(op, "ou") == 0)
+    else if (strcmp(op, "ou") == 0) {   // Menor precedência (OR)
         return 1;
-    else
-        return -1;
+    }
+
+    // Retorna -1 para tokens desconhecidos
+    return -1;
 }
 
-void infixToPostfix(const char* exp) {
-    int len = strlen(exp);
-    char result[len + 1];
-    char stack[len][10];  // Array de strings para operadores de até 10 caracteres
-    int j = 0;
-    int top = -1;
+// Função de conversão infix -> postfix
+void infixToPostfix(char lista_infix[50][50]) {
+    char result[256] = "";  // Resultado final em notação postfix
+    char stack[50][50];  // Pilha para operadores (máximo de 50 operadores, com até MAX_OPERADOR caracteres)
+    int top = -1;  // Índice da pilha
+    int j = 0;  // Índice para o resultado
 
-    for (int i = 0; i < len; ) {
-        if (isalnum(exp[i])) {  // Operando (algarismos ou letras)
-            result[j++] = exp[i];
-            i++;
-        } 
-        else if (exp[i] == '(') {  // Abre parêntese
-            strcpy(stack[++top], "(");
-            i++;
-        } 
-        else if (exp[i] == ')') {  // Fecha parêntese
+    // Usa listIndex para determinar o número de tokens e iterar até ele
+    for (int i = 0; i < listIndex; i++) {
+        char* token = lista_infix[i];  // Obtém o lexema do token
+
+        // Se o token for um operando (letra ou número)
+        if (isalnum(token[0]) && ( strcmp(token, "ou") != 0 && strcmp(token, "e") != 0 && strcmp(token, "nao") != 0 && strcmp(token, "+-u") != 0) ) {
+            strcat(result, token);  // Adiciona o operando ao resultado
+        }
+        // Se o token for um parêntese de abertura
+        else if (strcmp(token, "(") == 0) {
+            strcpy(stack[++top], "(");  // Empilha o parêntese
+        }
+        // Se o token for um parêntese de fechamento
+        else if (strcmp(token, ")") == 0) {
             while (top != -1 && strcmp(stack[top], "(") != 0) {
-                result[j++] = ' ';  // Separador entre operadores de múltiplos caracteres
-                strcpy(result + j, stack[top--]);
-                j += strlen(result + j);
+                strcat(result, stack[top--]);  // Desempilha até encontrar '('
             }
-            top--;
-            i++;
-        } 
-        else {  // Operador
-            char op[10] = "";  // Armazena o operador encontrado
-            if (strncmp(exp + i, "div", 3) == 0) {
-                strcpy(op, "div");
-                i += 3;
-            } 
-            else if (strncmp(exp + i, "nao", 3) == 0) {
-                strcpy(op, "nao");
-                i += 3;
-            } 
-            else if (strncmp(exp + i, "e", 1) == 0) {
-                strcpy(op, "e");
-                i += 1;
-            } 
-            else if (strncmp(exp + i, "ou", 2) == 0) {
-                strcpy(op, "ou");
-                i += 2;
-            } 
-            else {
-                op[0] = exp[i];
-                i++;
+            top--;  // Remove o '(' da pilha
+        }
+        // Caso o token seja um operador
+        else {
+            printf("[%s]", token);
+            while (top != -1 && prec(token) <= prec(stack[top])) {
+                strcat(result, stack[top--]);  // Desempilha os operadores de maior ou igual precedência
             }
-
-            while (top != -1 && prec(op) <= prec(stack[top])) {
-                result[j++] = ' ';  // Separador entre operadores de múltiplos caracteres
-                strcpy(result + j, stack[top--]);
-                j += strlen(result + j);
-            }
-            strcpy(stack[++top], op);
+            strcpy(stack[++top], token);  // Empilha o operador atual
         }
     }
 
     // Desempilha todos os operadores restantes
     while (top != -1) {
-        result[j++] = ' ';
-        strcpy(result + j, stack[top--]);
-        j += strlen(result + j);
+        strcat(result, stack[top--]);
     }
 
-    result[j] = '\0';
     printf("Postfix: %s\n", result);
 }
-
-
 
 char tratarEspacoComentario() {
     while ((ch == '{' || isspace(ch) || ch == '\t' || ch == '\n') && ch != EOF) {
@@ -758,7 +766,7 @@ void analisa_atrib_chprocedimento(){
     //CONSIDERANDO QUE TENHO UM SIDENTIFICADOR NO TOKEN
     char auxiliar[50];
     strcpy(auxiliar, token.lexema);
-    
+
     AnalisadorLexical();
     if(strcmp(token.simbolo, "satribuicao") == 0){
         analisa_atribuicao();
@@ -835,9 +843,9 @@ void analisa_tipo(){
 
         //Identificador* encontrado = buscarIdentificador(tabelaSimbolos, token.lexema);
         printf("%s\n\n", token.lexema);
-        
+
     }
-    
+
     AnalisadorLexical();
 }
 
@@ -1006,7 +1014,7 @@ void analisa_declaracao_funcao(){
                     if (strcmp(token.simbolo, "sinteiro") == 0) {
                         coloca_tipo_func(&tabelaSimbolos, nome_funcao, "funcao inteiro");
                     }
-                    else { 
+                    else {
                         coloca_tipo_func(&tabelaSimbolos, nome_funcao, "funcao booleano");
                     }
                     AnalisadorLexical();
@@ -1060,9 +1068,9 @@ void analisa_expressao(){
 // da pra fazer
 void analisa_expressao_simples(){
     //feito
-    if((strcmp(token.simbolo, "smais") == 0) || (strcmp(token.simbolo, "smenos") == 0)) { 
+    if((strcmp(token.simbolo, "smais") == 0) || (strcmp(token.simbolo, "smenos") == 0)) {
         //sinal
-        addListaInFix("u");
+        addListaInFix("+-u");
         AnalisadorLexical();
         // addListaInFix(token.lexema);
     }
@@ -1070,10 +1078,10 @@ void analisa_expressao_simples(){
     analisa_termo();
 
     while((strcmp(token.simbolo, "smais") == 0) || (strcmp(token.simbolo, "smenos") == 0) || (strcmp(token.simbolo, "sou") == 0)){
-        
+
         addListaInFix(token.lexema);
         AnalisadorLexical();
-        
+
 
         //coloca na lista
         // addListaInFix(token.lexema);
@@ -1100,7 +1108,7 @@ void analisa_termo(){
 void analisa_fator(){
 
     if(strcmp(token.simbolo, "sidentificador") == 0){
-    
+
 
         Identificador* encontrado = buscarIdentificador(tabelaSimbolos, token.lexema);
         if (encontrado != NULL) {
@@ -1112,10 +1120,10 @@ void analisa_fator(){
                 addListaInFix(token.lexema);
                 AnalisadorLexical();
                 //coloca na lista
-                
+
                 // printf("Token que chega aqui %s", token.lexema);
             }
-            
+
         }else{
             printf("ERRO! funcao nao declarada na linha %d\n", line_counter);
             exit(0);
@@ -1180,7 +1188,7 @@ int main(){
     // Identificador* encontrado = buscarIdentificador(tabelaSimbolos, "variavelX");
     // if (encontrado != NULL) {
     //     printf("\nIdentificador encontrado:\n");
-    //     printf("Nome: %s, Escopo: %s, Tipo: %s, Endereço: %p\n", 
+    //     printf("Nome: %s, Escopo: %s, Tipo: %s, Endereço: %p\n",
     //            encontrado->nome, encontrado->escopo, encontrado->tipo, encontrado->memoria);
     // } else {
     //     printf("\nIdentificador não encontrado!\n");
