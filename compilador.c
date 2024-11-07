@@ -203,8 +203,95 @@ void listarListaInfix() {
     // for (int i = 0; i < listIndex; i++) {
     //     printf(lista_infix[i]);
     // }
-    printf("%s", lista_infix);
+    printf("%s\n", lista_infix);
 }
+
+void resetListaInfix() {
+    lista_infix[0] = '\0';  // Define o primeiro caractere como nulo, "limpando" a string
+}
+
+//PORRA
+
+int prec(const char* op) {
+    if (strcmp(op, "u") == 0 || strcmp(op, "*") == 0 || strcmp(op, "div") == 0 || strcmp(op, "+") == 0 || strcmp(op, "-") == 0)
+        return 3;
+    else if (strcmp(op, ">") == 0 || strcmp(op, ">=") == 0 || strcmp(op, "<") == 0 || strcmp(op, "<=") == 0 || strcmp(op, "=") == 0 || strcmp(op, "!=") == 0)
+        return 2;
+    else if (strcmp(op, "nao") == 0 || strcmp(op, "e") == 0 || strcmp(op, "ou") == 0)
+        return 1;
+    else
+        return -1;
+}
+
+void infixToPostfix(const char* exp) {
+    int len = strlen(exp);
+    char result[len + 1];
+    char stack[len][10];  // Array de strings para operadores de até 10 caracteres
+    int j = 0;
+    int top = -1;
+
+    for (int i = 0; i < len; ) {
+        if (isalnum(exp[i])) {  // Operando (algarismos ou letras)
+            result[j++] = exp[i];
+            i++;
+        } 
+        else if (exp[i] == '(') {  // Abre parêntese
+            strcpy(stack[++top], "(");
+            i++;
+        } 
+        else if (exp[i] == ')') {  // Fecha parêntese
+            while (top != -1 && strcmp(stack[top], "(") != 0) {
+                result[j++] = ' ';  // Separador entre operadores de múltiplos caracteres
+                strcpy(result + j, stack[top--]);
+                j += strlen(result + j);
+            }
+            top--;
+            i++;
+        } 
+        else {  // Operador
+            char op[10] = "";  // Armazena o operador encontrado
+            if (strncmp(exp + i, "div", 3) == 0) {
+                strcpy(op, "div");
+                i += 3;
+            } 
+            else if (strncmp(exp + i, "nao", 3) == 0) {
+                strcpy(op, "nao");
+                i += 3;
+            } 
+            else if (strncmp(exp + i, "e", 1) == 0) {
+                strcpy(op, "e");
+                i += 1;
+            } 
+            else if (strncmp(exp + i, "ou", 2) == 0) {
+                strcpy(op, "ou");
+                i += 2;
+            } 
+            else {
+                op[0] = exp[i];
+                i++;
+            }
+
+            while (top != -1 && prec(op) <= prec(stack[top])) {
+                result[j++] = ' ';  // Separador entre operadores de múltiplos caracteres
+                strcpy(result + j, stack[top--]);
+                j += strlen(result + j);
+            }
+            strcpy(stack[++top], op);
+        }
+    }
+
+    // Desempilha todos os operadores restantes
+    while (top != -1) {
+        result[j++] = ' ';
+        strcpy(result + j, stack[top--]);
+        j += strlen(result + j);
+    }
+
+    result[j] = '\0';
+    printf("Postfix: %s\n", result);
+}
+
+
 
 char tratarEspacoComentario() {
     while ((ch == '{' || isspace(ch) || ch == '\t' || ch == '\n') && ch != EOF) {
@@ -948,14 +1035,23 @@ void analisa_expressao(){
     //feito
 
     //colocar na lista
-    addListaInFix(token.lexema);
-    printf("Token que chega analisa expressao %s", token.lexema);
+    // addListaInFix(token.lexema);
+
+    printf("Token que chega analisa expressao %s\n", token.lexema);
 
     analisa_expressao_simples();
     if( (strcmp(token.simbolo, "smaior") == 0) || (strcmp(token.simbolo, "smaiorig") == 0) || (strcmp(token.simbolo, "sig") == 0) || (strcmp(token.simbolo, "smenor") == 0) || (strcmp(token.simbolo, "smenorig") == 0) || (strcmp(token.simbolo, "sdif") == 0)){
         addListaInFix(token.lexema);
         AnalisadorLexical();
+        // addListaInFix(token.lexema);
         analisa_expressao_simples();
+    }
+
+    //se tirar nao vai funcionar com parenteses estejam avisados
+    if(strcmp(token.simbolo, "sfecha_parenteses") != 0){
+        listarListaInfix();
+        infixToPostfix(lista_infix);
+        resetListaInfix();
     }
 }
 
@@ -966,16 +1062,19 @@ void analisa_expressao_simples(){
     //feito
     if((strcmp(token.simbolo, "smais") == 0) || (strcmp(token.simbolo, "smenos") == 0)) { 
         //sinal
-        
+        addListaInFix("u");
         AnalisadorLexical();
+        // addListaInFix(token.lexema);
     }
 
     analisa_termo();
 
     while((strcmp(token.simbolo, "smais") == 0) || (strcmp(token.simbolo, "smenos") == 0) || (strcmp(token.simbolo, "sou") == 0)){
+        
         addListaInFix(token.lexema);
         AnalisadorLexical();
-        addListaInFix(token.lexema);
+        
+
         //coloca na lista
         // addListaInFix(token.lexema);
         analisa_termo();
@@ -988,9 +1087,10 @@ void analisa_termo(){
     analisa_fator();
 
     while(strcmp(token.simbolo, "smult") == 0 || strcmp(token.simbolo, "sdiv") == 0 || strcmp(token.simbolo, "se") == 0){
+        addListaInFix(token.lexema);
         AnalisadorLexical();
         //coloca na lista
-        addListaInFix(token.lexema);
+        // addListaInFix(token.lexema);
         analisa_fator();
     }
 }
@@ -1006,11 +1106,13 @@ void analisa_fator(){
         if (encontrado != NULL) {
             // Faz o strcpy de token.lexema para encontrado->tipo
             if(strcmp(encontrado->tipo, "funcao inteiro") == 0 || strcmp(encontrado->tipo, "funcao booleana") == 0){
+                addListaInFix(token.lexema);
                 analisa_chamada_funcao();
             }else{
+                addListaInFix(token.lexema);
                 AnalisadorLexical();
                 //coloca na lista
-                // addListaInFix(token.lexema);
+                
                 // printf("Token que chega aqui %s", token.lexema);
             }
             
@@ -1024,21 +1126,21 @@ void analisa_fator(){
         AnalisadorLexical();
 
     } else if (strcmp(token.simbolo, "snao") == 0){
+        addListaInFix(token.lexema);
         AnalisadorLexical();
         //coloca na lista
-        addListaInFix(token.lexema);
         analisa_fator();
 
     } else if (strcmp(token.simbolo, "sabre_parenteses") == 0){
+        addListaInFix(token.lexema);
         AnalisadorLexical();
         //coloca na lista
-        addListaInFix(token.lexema);
         analisa_expressao();
 
         if(strcmp(token.simbolo, "sfecha_parenteses") == 0){
+            addListaInFix(token.lexema);
             AnalisadorLexical();
             //coloca na lista
-            addListaInFix(token.lexema);
         } else {
             printf("\n\n ERRO -- Falta de fechar parenteses\n\n");
         }
@@ -1144,7 +1246,7 @@ int main(){
 
     liberarTabelaSimbolos(tabelaSimbolos);
 
-    printf("\nLista Infix: \n");
-    listarListaInfix();
+    // printf("\nLista Infix: \n");
+    // listarListaInfix();
     return 0;
 }
