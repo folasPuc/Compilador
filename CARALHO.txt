@@ -13,7 +13,9 @@ fim;
 
   procedimento ler;
   var s: inteiro;
+      j: inteiro;
   inicio
+    s:=j;
      leia (s);
      leia (a);
      s:= soma;                  
@@ -22,9 +24,10 @@ fim;
 
   procedimento loop;         
   var x, y, z: inteiro;
+      u: booleano;
   inicio
     leia (x);   {para parar digite um valor maior que 9 }
-    se ((x < y) ou (y > 10))
+    se (x > 10)
     entao ler;               
   fim; 
   

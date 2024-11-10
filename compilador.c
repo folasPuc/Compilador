@@ -203,6 +203,7 @@ char lista_infix[50][50]; // Agora uma matriz para armazenar até 50 lexemas
 char lista_postfix_global[50][50];
 int listIndex = 0;
 int len_lista_postfix = 0;
+const char* resp;
 FILE *fptr;
 char ch;
 Identificador *tabelaSimbolos = NULL;
@@ -648,6 +649,24 @@ const char* avaliarPostfix(char lista_postfix[50][50])
 
                     //aqui tem que retornar
                 }
+            }
+        }
+    }
+
+    if (strcmp(stack[top], "inteiro") != 0 && strcmp(stack[top], "booleano") != 0) {
+
+        Identificador *encontrado = buscarIdentificador(tabelaSimbolos, stack[top]);
+        if (encontrado != NULL) {
+            strcpy(stack[top], encontrado->tipo);
+        } else {
+
+            char aux[50] = {0};
+            strcpy(aux, stack[top]);
+            if (isdigit(aux[0])) {
+                printf("\n Encontrou um numero nesse caralho");
+                strcpy(stack[top], "inteiro");
+            } else {
+                printf("Nao encontrado");
             }
         }
     }
@@ -1203,6 +1222,26 @@ void analisa_atribuicao(char identificador[50])
     AnalisadorLexical();
 
     analisa_expressao();
+
+    if (strcmp(encontrado->tipo, "inteiro") == 0 || strcmp(encontrado->tipo, "funcao inteiro") == 0) { //se for igual
+        if (strcmp(resp, "inteiro") == 0 || strcmp(resp, "funcao inteiro") == 0){
+            //ok
+        } else {
+            printf("\n1- Nao pode atribuir tipos diferentes, linha %d", line_counter);
+            exit(0);
+        }
+    }
+
+    if (strcmp(encontrado->tipo, "booleano") == 0 || strcmp(encontrado->tipo, "funcao booleano") == 0) {
+        if (strcmp(resp, "booleano") == 0 || strcmp(resp, "funcao booleano") == 0) {
+            //ok
+        } else {
+            printf("\n2- Nao pode atribuir tipos diferentes, linha %d", line_counter);
+            exit(0);
+        }
+    }
+
+
 }
 
 void analisa_atrib_chprocedimento()
@@ -1407,6 +1446,11 @@ void analisa_enquanto()
     AnalisadorLexical();
     // aqui tem o v
     analisa_expressao();
+
+    if (strcmp(resp, "booleano") != 0) {
+        printf("Erro [analisa_enquanto]: tipo incompativel, linha %d", line_counter);
+        exit(0);
+    }
     if (strcmp(token.simbolo, "sfaca") == 0)
     {
         AnalisadorLexical();
@@ -1423,6 +1467,12 @@ void analisa_se()
     // Feito
     AnalisadorLexical();
     analisa_expressao();
+
+    if (strcmp(resp, "booleano") != 0) {
+        printf("Erro [analisa_se]: tipo incompativel, linha %d", line_counter);
+        exit(0);
+    }
+
     if (strcmp(token.simbolo, "sentao") == 0)
     {
         AnalisadorLexical();
@@ -1579,7 +1629,6 @@ void analisa_expressao()
     {
         listarListaInfix();
         infixToPostfix(lista_infix);
-        const char* resp;
         resp =  avaliarPostfix(lista_postfix_global);
         printf("RESP RESP: %s\n", resp);
         resetListaInfix();
