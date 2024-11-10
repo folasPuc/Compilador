@@ -5,25 +5,26 @@ var a,b,s: inteiro;
 funcao penis: inteiro;
 inicio
 penis:= a;
-
-
 fim;
 
  funcao soma: inteiro;
  var c,a,s: inteiro;                   
-     z: booleano;                  
-  procedimento ler;          
+     z: booleano;
+
+  procedimento ler;
+  var s: inteiro;
   inicio
-     leia (c);
+     leia (s);
      leia (a);
      s:= soma;                  
      escreva (s)
   fim;
+
   procedimento loop;         
   var x, y, z: inteiro;
   inicio
     leia (x);   {para parar digite um valor maior que 9 }
-    se (-x + 5 < (-y + 3))
+    se ((x < y) ou (y > 10))
     entao ler;               
   fim; 
   
@@ -33,7 +34,7 @@ fim;
  fim;                                                             
 
 inicio      {corpo principal}
-s:= soma;                              
+s:= soma;                           
 escreva(s);
 a:= penis;
 fim.
