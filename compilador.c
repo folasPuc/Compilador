@@ -1150,6 +1150,11 @@ void analisa_escreva()
                 printf("[Analisa escreva] - Identificador nao declarado na linha %d", line_counter);
                 exit(0);
             }
+            
+            if (strcmp(encontrado->tipo, "inteiro") != 0) { //compara se nao eh penis
+                printf("[Analisa escreva] - Tipo diferente de inteiro, linha %d", line_counter);
+                exit(0);
+            }
             AnalisadorLexical();
             if (strcmp(token.simbolo, "sfecha_parenteses") == 0)
             {
@@ -1188,6 +1193,11 @@ void analisa_leia()
                 printf("[Analisa leia] - Identificador nao declarado na linha %d", line_counter);
                 exit(0);
                 return;
+            }
+
+            if (strcmp(encontrado->tipo, "inteiro") != 0) { //compara se nao eh penis
+                printf("[Analisa leia] - Tipo diferente de inteiro, linha %d", line_counter);
+                exit(0);
             }
             AnalisadorLexical();
             if (strcmp(token.simbolo, "sfecha_parenteses") == 0)

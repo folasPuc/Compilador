@@ -13,11 +13,10 @@ fim;
 
   procedimento ler;
   var s: inteiro;
-      j: inteiro;
+      j: booleano;
   inicio
-    s:=j;
      leia (s);
-     leia (a);
+     leia (c);
      s:= soma;                  
      escreva (s)
   fim;
