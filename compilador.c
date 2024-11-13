@@ -1639,7 +1639,6 @@ void analisa_enquanto()
         AnalisadorLexical();
         analisa_comando_simples();
 
-
         snprintf(auxiliar1_str, sizeof(auxiliar1_str), "%-4d", auxiliar_rotulo_1);
         Gera("    ", "JMP    ", auxiliar1_str, "    ");
 
@@ -1686,6 +1685,7 @@ void analisa_subrotinas()
     char rotulo_str[5];
     flag = 0;
 
+    // ESSA PARTE É GERAÇAO DE CODIGO !!!!!!!!! 
     if((strcmp(token.simbolo, "sprocedimento") == 0) || (strcmp(token.simbolo, "sfuncao") == 0)){
         auxiliar_rotulo = ROTULO;
 
@@ -1716,6 +1716,7 @@ void analisa_subrotinas()
         }
     }
 
+    // ESSA PARTE É GERAÇAO DE CODIGO !!!!!!!!! 
     if(flag = 1){
         snprintf(rotulo_str, sizeof(rotulo_str), "%-4d", auxiliar_rotulo);
         Gera(rotulo_str, "        ", "    ", "    ");
@@ -1727,6 +1728,7 @@ void analisa_subrotinas()
 
 void analisa_declaracao_procedimento()
 {
+    char rotulo_str[5];
     // Feito
     AnalisadorLexical();
     char nivel[3] = "L";
@@ -1739,7 +1741,15 @@ void analisa_declaracao_procedimento()
             printf("[Analisa declaracao procedimento] - Procedimento ja declarado, linha %d", line_counter);
             return;
         }
-        inserirIdentificador(&tabelaSimbolos, token.lexema, nivel, "procedimento", "a");
+
+        // ESSA PARTE É GERAÇAO DE CODIGO !!!!!!!!! 
+        snprintf(rotulo_str, sizeof(rotulo_str), "%-4d", ROTULO);
+        
+        inserirIdentificador(&tabelaSimbolos, token.lexema, nivel, "procedimento", rotulo_str);
+
+        Gera(rotulo_str, "        ", "    ", "    ");
+
+        ROTULO = ROTULO + 1;
         AnalisadorLexical();
         if (strcmp(token.simbolo, "sponto_virgula") == 0)
         {
