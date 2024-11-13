@@ -1,0 +1,29 @@
+    ALLOC   0   3   
+    ALLOC   3   1   
+    JMP     1       
+4210                
+    STR     1    
+    ALLOC   4   3   
+    ALLOC   7   1   
+    JMP     1       
+    ALLOC   8   3   
+    ALLOC   11  1   
+4210                
+    DIVI            
+    SUB             
+    MULT            
+    ADD             
+    STR     9    
+    STR     11    
+    STR     8    
+    ALLOC   12  3   
+    ALLOC   15  1   
+4210                
+    ADD             
+    CMEQ            
+1                   
+    ADD             
+    STR     1    
+1                   
+    STR     2    
+    STR     0    

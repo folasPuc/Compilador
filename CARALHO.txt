@@ -12,11 +12,13 @@ fim;
      z: booleano;
 
   procedimento ler;
-  var s: inteiro;
+  var s, k, c: inteiro;
       j: booleano;
   inicio
      leia (s);
      leia (c);
+     k:= a + (b div 9 - 3) * c;
+     j:=falso;
      s:= soma;                  
      escreva (s)
   fim;
@@ -26,7 +28,7 @@ fim;
       u: booleano;
   inicio
     leia (x);   {para parar digite um valor maior que 9 }
-    se (x > 10)
+    se (x <= 10 + 5)
     entao ler;               
   fim; 
   

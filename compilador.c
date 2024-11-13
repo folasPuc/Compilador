@@ -11,12 +11,29 @@ typedef struct Identificador
     char nome[50];                 // Nome do identificador (lexema)
     char escopo[50];               // Nome do escopo (procedimento ou função)
     char tipo[20];                 // Tipo do identificador (int, float, etc.)
-    void *memoria;                 // Endereço de memória alocado
+    char memoria[20];                 // Endereço de memória alocado
     struct Identificador *proximo; // Ponteiro para o próximo identificador
 } Identificador;
 
+
+void Gera(char* rotulo, char* instrucao, char* atributo_1, char* atributo_2){
+    // Abrir arquivo em modo de adição ("append")
+    FILE* arquivo = fopen("output.obj", "a");
+    // Verificar se o arquivo foi aberto corretamente
+    if (arquivo == NULL) {
+        perror("Erro ao abrir o arquivo");
+        return;
+    }
+
+    fprintf(arquivo, "%s%s%s%s\n", rotulo, instrucao, atributo_1, atributo_2);
+    // Fechar o arquivo
+    fclose(arquivo);
+}
+
+   
+
 // Função para criar um novo nó de identificador
-Identificador *criarIdentificador(const char *nome, const char *escopo, const char *tipo, void *memoria)
+Identificador *criarIdentificador(const char *nome, const char *escopo, const char *tipo, const char *memoria)
 {
     Identificador *novoIdentificador = (Identificador *)malloc(sizeof(Identificador));
     if (novoIdentificador != NULL)
@@ -24,14 +41,13 @@ Identificador *criarIdentificador(const char *nome, const char *escopo, const ch
         strncpy(novoIdentificador->nome, nome, sizeof(novoIdentificador->nome));
         strncpy(novoIdentificador->escopo, escopo, sizeof(novoIdentificador->escopo));
         strncpy(novoIdentificador->tipo, tipo, sizeof(novoIdentificador->tipo));
-        novoIdentificador->memoria = memoria;
-        novoIdentificador->proximo = NULL;
+        strncpy(novoIdentificador->memoria, memoria, sizeof(novoIdentificador->memoria));
     }
     return novoIdentificador;
 }
 
 // Função para inserir um identificador no início da lista (mais recente primeiro)
-void inserirIdentificador(Identificador **head, const char *nome, const char *escopo, const char *tipo, void *memoria)
+void inserirIdentificador(Identificador **head, const char *nome, const char *escopo, const char *tipo, const char *memoria)
 {
     Identificador *novoIdentificador = criarIdentificador(nome, escopo, tipo, memoria);
     novoIdentificador->proximo = *head; // O novo identificador aponta para o antigo primeiro
@@ -157,7 +173,7 @@ void imprimirTabelaSimbolos(Identificador *head)
     Identificador *atual = head;
     while (atual != NULL)
     {
-        printf("Nome: %s, Escopo: %s, Tipo: %s, Endereço: %p\n",
+        printf("Nome: %s, Escopo: %s, Tipo: %s, Endereço: %s\n",
                atual->nome, atual->escopo, atual->tipo, atual->memoria);
 
         atual = atual->proximo;
@@ -203,10 +219,13 @@ char lista_infix[50][50]; // Agora uma matriz para armazenar até 50 lexemas
 char lista_postfix_global[50][50];
 int listIndex = 0;
 int len_lista_postfix = 0;
+int end_disp_momento = 0;
+int end_var = 0;
 const char* resp;
 FILE *fptr;
 char ch;
 Identificador *tabelaSimbolos = NULL;
+int ROTULO;
 
 typedef struct
 {
@@ -666,7 +685,13 @@ const char* avaliarPostfix(char lista_postfix[50][50])
                 printf("\n Encontrou um numero nesse caralho");
                 strcpy(stack[top], "inteiro");
             } else {
-                printf("Nao encontrado");
+                if (strcmp(aux, "verdadeiro") == 0 || strcmp(aux, "falso") == 0) {
+                    printf("\nencontrou um verdadeiro ou falso nesse caralho");
+                    strcpy(stack[top], "booleano");
+                } else {
+                    printf("erro penis");
+                    exit(0);
+                }
             }
         }
     }
@@ -675,6 +700,106 @@ const char* avaliarPostfix(char lista_postfix[50][50])
     strcpy(answ, stack[top]);
     //printf("answ: %s", answ);
     return answ;
+}
+
+void gera_expressao(char lista_postfix[50][50]) {
+
+    //LEMBRAR DE COLOCAR O INV, +U E -U SEPARADO
+
+    for (int i = 0; i < len_lista_postfix; i++) {
+
+    if (strcmp(lista_postfix[i], "+") == 0) {
+        //gera ADD
+        Gera("    ", "ADD     ", "    ", "    ");
+
+    }
+
+    
+    if (strcmp(lista_postfix[i], "-") == 0) {
+        //gera SUB
+        Gera("    ", "SUB     ", "    ", "    ");
+
+    }
+
+    
+    if (strcmp(lista_postfix[i], "*") == 0) {
+        //gera MULT
+        Gera("    ", "MULT    ", "    ", "    ");
+
+    }
+
+    
+    if (strcmp(lista_postfix[i], "div") == 0) {
+        //gera DIVI
+        Gera("    ", "DIVI    ", "    ", "    ");
+
+    }
+
+    
+    if (strcmp(lista_postfix[i], "nao") == 0) {
+        //gera NEG
+        Gera("    ", "NEG     ", "    ", "    ");
+
+    }
+
+    
+    if (strcmp(lista_postfix[i], "e") == 0) {
+        //gera AND
+        Gera("    ", "AND     ", "    ", "    ");
+
+    }
+    
+    if (strcmp(lista_postfix[i], "ou") == 0) {
+        //gera OR
+        Gera("    ", "OR      ", "    ", "    ");
+
+    }
+
+    
+    if (strcmp(lista_postfix[i], "<") == 0) {
+        //gera CME
+        Gera("    ", "CME     ", "    ", "    ");
+
+    }
+
+    
+    if (strcmp(lista_postfix[i], ">") == 0) {
+        //gera CMA
+        Gera("    ", "CMA     ", "    ", "    ");
+
+    }
+
+    
+    if (strcmp(lista_postfix[i], "=") == 0) {
+        //gera CEQ
+        Gera("    ", "CEQ     ", "    ", "    ");
+
+    }
+
+    
+    if (strcmp(lista_postfix[i], "!=") == 0) {
+        //gera CDIF
+        Gera("    ", "CDIF    ", "    ", "    ");
+
+    }
+
+    
+    if (strcmp(lista_postfix[i], "<=") == 0) {
+        //gera CMEQ
+        Gera("    ", "CMEQ    ", "    ", "    ");
+
+    }
+
+    
+    if (strcmp(lista_postfix[i], ">=") == 0) {
+        //gera CMAQ
+        Gera("    ", "CMAQ    ", "    ", "    ");
+
+    }
+
+
+    }
+
 }
 
 char tratarEspacoComentario()
@@ -1251,6 +1376,13 @@ void analisa_atribuicao(char identificador[50])
         }
     }
 
+    char memoria_str[5];  // 4 caracteres + '\0'
+
+    // Converte encontrado->memoria para uma string de 4 caracteres
+    snprintf(memoria_str, sizeof(memoria_str), "%4d", encontrado->memoria);
+
+    Gera("    ", "STR     ", encontrado->memoria, "    ");
+
 
 }
 
@@ -1365,15 +1497,21 @@ void analisa_tipo()
 
 void analisa_variaveis()
 {
+    int count = 0;
     // Feito
     do
     {
         if (strcmp(token.simbolo, "sidentificador") == 0)
         {
+            count++;
             // Identificador* encontrado = buscarIdentificador(tabelaSimbolos, token.lexema);
             if (buscaAteMarcaPrimeiraOcorrencia(&tabelaSimbolos, token.lexema) == 0)
             {
-                inserirIdentificador(&tabelaSimbolos, token.lexema, "", "variavel", &token.lexema);
+                char end_string[30] = {0};
+                sprintf(end_string, "%d", end_var);
+
+                inserirIdentificador(&tabelaSimbolos, token.lexema, "", "variavel", end_string);
+                end_var++;
                 AnalisadorLexical();
                 if (strcmp(token.simbolo, "svirgula") == 0 || strcmp(token.simbolo, "sdoispontos") == 0)
                 {
@@ -1407,6 +1545,17 @@ void analisa_variaveis()
 
     } while (strcmp(token.simbolo, "sdoispontos") != 0);
 
+    char end_string[5]; // 4 caracteres + '\0'
+    char alocado[5];    // 4 caracteres + '\0'
+
+    // Formata end_string e alocado com largura fixa de 4 caracteres
+    snprintf(end_string, sizeof(end_string), "%-4d", end_disp_momento);
+    snprintf(alocado, sizeof(alocado), "%-4d", count);
+    
+    Gera("    ", "ALLOC   ", end_string, alocado);
+
+    end_disp_momento += count;
+
     AnalisadorLexical();
     analisa_tipo();
 }
@@ -1422,7 +1571,7 @@ void analisa_et_variaveis()
         {
 
             while (strcmp(token.simbolo, "sidentificador") == 0)
-            {
+            {   
                 analisa_variaveis();
                 if (strcmp(token.simbolo, "sponto_virgula") == 0)
                 {
@@ -1452,6 +1601,24 @@ void analisa_bloco()
 
 void analisa_enquanto()
 {
+    // ISSO AQUI FAZ PARTE
+    //  DA GERACAO DE CODIGO !!!!!
+    int auxiliar_rotulo_1, auxiliar_rotulo_2;
+
+    // Variaveis que pegar o inteiro que viram strings
+    char rotulo_str[5];
+    char rotulo_str2[5];
+    char auxiliar1_str[5];
+    char auxiliar2_str[5];
+    
+    // Transforma rotulo 1 em string
+    auxiliar_rotulo_1 = ROTULO;
+    snprintf(rotulo_str, sizeof(rotulo_str), "%-4d", ROTULO);
+    Gera(rotulo_str, "        ", "    ", "    ");
+    
+    ROTULO = ROTULO + 1; 
+
+
     // Feito
     AnalisadorLexical();
     // aqui tem o v
@@ -1463,8 +1630,22 @@ void analisa_enquanto()
     }
     if (strcmp(token.simbolo, "sfaca") == 0)
     {
+        auxiliar_rotulo_2 = ROTULO;
+        snprintf(rotulo_str2, sizeof(rotulo_str), "%-4d", ROTULO);
+        Gera("    ", "JMPF    ", rotulo_str2, "    ");
+
+
+        ROTULO;
         AnalisadorLexical();
         analisa_comando_simples();
+
+
+        snprintf(auxiliar1_str, sizeof(auxiliar1_str), "%-4d", auxiliar_rotulo_1);
+        Gera("    ", "JMP    ", auxiliar1_str, "    ");
+
+        snprintf(auxiliar2_str, sizeof(auxiliar2_str), "%-4d", auxiliar_rotulo_2);
+        Gera(auxiliar2_str, "        ", "    ", "    ");
+        
     }
     else
     {
@@ -1501,6 +1682,18 @@ void analisa_se()
 
 void analisa_subrotinas()
 {
+    int auxiliar_rotulo, flag; 
+    char rotulo_str[5];
+    flag = 0;
+
+    if((strcmp(token.simbolo, "sprocedimento") == 0) || (strcmp(token.simbolo, "sfuncao") == 0)){
+        auxiliar_rotulo = ROTULO;
+
+        snprintf(rotulo_str, sizeof(rotulo_str), "%-4d", ROTULO);
+        Gera("    ", "JMP     ", rotulo_str, "    ");
+        flag = 1;
+    }
+
     // Feito
     while ((strcmp(token.simbolo, "sfuncao") == 0) || (strcmp(token.simbolo, "sprocedimento") == 0))
     {
@@ -1522,6 +1715,14 @@ void analisa_subrotinas()
             printf("ERRO! [ analisa_subrotinas ] Esperava ponto e virgula na linha %d", line_counter);
         }
     }
+
+    if(flag = 1){
+        snprintf(rotulo_str, sizeof(rotulo_str), "%-4d", auxiliar_rotulo);
+        Gera(rotulo_str, "        ", "    ", "    ");
+    }
+
+
+
 }
 
 void analisa_declaracao_procedimento()
@@ -1538,7 +1739,7 @@ void analisa_declaracao_procedimento()
             printf("[Analisa declaracao procedimento] - Procedimento ja declarado, linha %d", line_counter);
             return;
         }
-        inserirIdentificador(&tabelaSimbolos, token.lexema, nivel, "procedimento", &token.lexema);
+        inserirIdentificador(&tabelaSimbolos, token.lexema, nivel, "procedimento", "a");
         AnalisadorLexical();
         if (strcmp(token.simbolo, "sponto_virgula") == 0)
         {
@@ -1570,7 +1771,9 @@ void analisa_declaracao_funcao()
         Identificador *encontrado = buscarIdentificador(tabelaSimbolos, token.lexema);
         if (encontrado == NULL)
         {
-            inserirIdentificador(&tabelaSimbolos, token.lexema, nivel, "", &token.lexema);
+            char rotulo [5] = {0};
+            snprintf(rotulo, sizeof(rotulo), "%d", ROTULO);
+            inserirIdentificador(&tabelaSimbolos, token.lexema, nivel, "", rotulo);
             strcpy(nome_funcao, token.lexema);
             AnalisadorLexical();
 
@@ -1641,6 +1844,7 @@ void analisa_expressao()
         infixToPostfix(lista_infix);
         resp =  avaliarPostfix(lista_postfix_global);
         printf("RESP RESP: %s\n", resp);
+        gera_expressao(lista_postfix_global);
         resetListaInfix();
     }
 }
@@ -1749,9 +1953,9 @@ void analisa_fator()
     }
     else if ((strcmp(token.lexema, "verdadeiro") == 0) || (strcmp(token.lexema, "falso") == 0))
     {
+        addListaInFix(token.lexema);
         AnalisadorLexical();
         // coloca lista
-        addListaInFix(token.lexema);
     }
     else
     {
@@ -1800,8 +2004,13 @@ int main()
     }
     ch = fgetc(fptr);
 
+    // Gera("Teste", NULL, "1", "2");
+
     // Lembre de while != EOF
     printf("abri o arquivo penis caralho");
+
+    ROTULO = 1;
+
     AnalisadorLexical();
 
     if (strcmp(token.simbolo, "sprograma") == 0)
@@ -1810,7 +2019,7 @@ int main()
         AnalisadorLexical();
         if (strcmp(token.simbolo, "sidentificador") == 0)
         {
-            inserirIdentificador(&tabelaSimbolos, token.lexema, "escopo - nada", "tipo - nomeDoPrograma", &token.lexema);
+            inserirIdentificador(&tabelaSimbolos, token.lexema, "escopo - nada", "tipo - nomeDoPrograma", "penisprograma");
             AnalisadorLexical();
             if (strcmp(token.simbolo, "sponto_virgula") == 0)
             {
