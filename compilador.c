@@ -1,4 +1,5 @@
 // C program to read a file using fgetc()
+// ESTAS SAO AS BIBLIOTECAS 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,6 +15,16 @@ typedef struct Identificador
     char memoria[20];                 // Endereço de memória alocado
     struct Identificador *proximo; // Ponteiro para o próximo identificador
 } Identificador;
+
+
+void limparArquivo() {
+    FILE *arquivo = fopen("output.obj", "w"); // Abre o arquivo no modo "w", apagando todo o conteúdo
+    if (arquivo == NULL) {
+        perror("Erro ao abrir o arquivo");
+        return;
+    }
+    fclose(arquivo); // Fecha o arquivo para concluir o processo de limpeza
+}
 
 
 void Gera(char* rotulo, char* instrucao, char* atributo_1, char* atributo_2){
@@ -278,7 +289,7 @@ void resetListaInfix()
 int prec(const char *op)
 {
     // Precedência de operadores aritméticos
-    if (strcmp(op, "+-u") == 0) // Precedência maior (positivo e negativo)
+    if (strcmp(op, "+u") == 0 || strcmp(op, "-u") == 0) // Precedência maior (positivo e negativo)
         return 7;
     else if (strcmp(op, "*") == 0 || strcmp(op, "div") == 0) // Precedência média (multiplicação e divisão)
         return 6;
@@ -325,7 +336,7 @@ void infixToPostfix(char lista_infix[50][50])
         char *token = lista_infix[i]; // Obtém o lexema do token
 
         // Se o token for um operando (letra ou número)
-        if (isalnum(token[0]) && (strcmp(token, "ou") != 0 && strcmp(token, "e") != 0 && strcmp(token, "nao") != 0 && strcmp(token, "+-u") != 0 && strcmp(token, "div") != 0))
+        if (isalnum(token[0]) && (strcmp(token, "ou") != 0 && strcmp(token, "e") != 0 && strcmp(token, "nao") != 0 && strcmp(token, "+u") != 0 && strcmp (token, "-u") != 0 && strcmp(token, "div") != 0))
         {
             strcpy(result[resultIndex++], token);
         }
@@ -387,7 +398,7 @@ const char* avaliarPostfix(char lista_postfix[50][50])
         printf("Stack[top]: %s\n", stack[top]);
 
         // eh um operando, letra ou numero
-        if (isalnum(lista_postfix[i][0]) && (strcmp(lista_postfix[i], "ou") != 0 && strcmp(lista_postfix[i], "e") != 0 && strcmp(lista_postfix[i], "nao") != 0 && strcmp(lista_postfix[i], "+-u") != 0 && strcmp(lista_postfix[i], "div") != 0))
+        if (isalnum(lista_postfix[i][0]) && (strcmp(lista_postfix[i], "ou") != 0 && strcmp(lista_postfix[i], "e") != 0 && strcmp(lista_postfix[i], "nao") != 0 && strcmp(lista_postfix[i], "+u") != 0 && strcmp(lista_postfix[i], "-u") != 0 && strcmp(lista_postfix[i], "div") != 0))
         {
             strcpy(stack[++top], lista_postfix[i]);
             printf("Stacking: %s \n", lista_postfix[i]);
@@ -797,9 +808,75 @@ void gera_expressao(char lista_postfix[50][50]) {
 
     }
 
+    if (strcmp(lista_postfix[i], "-u") == 0) {
+        //gera INV
+        Gera("    ", "INV     ", "    ", "    ");
 
     }
 
+
+    }
+
+}
+
+void gera_LDC_LDV(char lista_posfix[50][50]) {
+    // VER SER É IDENTIFICADOR E PROCURAR NA TABELE E ACHAR O ENDERESSO DELE
+    // eh um operando, letra ou numero
+
+    char memoria_str[5];
+    char auxiliar_str[5];
+    for(int i=0; i < len_lista_postfix; i ++){
+
+        printf("  -> [GERA_LDC_LDV] - caracter: %s  ", lista_posfix[i]);
+
+        if (isalnum(lista_posfix[i][0]) && (strcmp(lista_posfix[i], "ou") != 0 && strcmp(lista_posfix[i], "e") != 0 && strcmp(lista_posfix[i], "nao") != 0 && strcmp(lista_posfix[i], "+u") != 0 && strcmp(lista_posfix[i], "-u") != 0 && strcmp(lista_posfix[i], "div") != 0))
+        {
+            if(isalpha(lista_posfix[i][0])){
+
+                if(strcmp(lista_posfix[i], "verdadeiro") == 0 || strcmp(lista_posfix[i], "falso") == 0){
+                    
+                    if(strcmp(lista_posfix[i], "verdadeiro") == 0) {
+                        Gera("    ", "LDC     ", "v   ", "    ");
+
+                    }else if(strcmp(lista_posfix[i], "falso") == 0){
+                        Gera("    ", "LDC     ", "f   ", "    ");
+                    }
+
+                }else{
+
+                    Identificador *encontrado = buscarIdentificador(tabelaSimbolos, lista_posfix[i]);
+
+                    if(encontrado == NULL){
+                        printf("[gera_LDC_LDV] - Indentificador nao encontrado");
+                    }
+
+                    printf("\ntipo do gera LDC_LDV: %s", encontrado->tipo);
+
+                    if((strcmp(encontrado->tipo, "funcao inteiro") == 0 || strcmp(encontrado->tipo, "funcao booleano") == 0 || strcmp (encontrado->tipo, "procedimento") == 0)){
+
+                        char char_rotulo[5];
+                        snprintf(char_rotulo, sizeof(char_rotulo), "%-4d", ROTULO);
+                        Gera("    ", "CALL    ", char_rotulo, "    ");
+                    } else {
+
+
+                    snprintf(memoria_str, sizeof(memoria_str), "%s", encontrado->memoria);
+                    Gera("    ", "LDV     ", memoria_str, "    ");
+                    }
+                }
+            }
+
+            if(isdigit(lista_posfix[i][0])){
+                
+                snprintf(memoria_str, sizeof(memoria_str), "%s", lista_posfix[i]);
+                Gera("    ", "LDC     ", memoria_str, "    ");
+            }
+
+        }
+
+       
+    }
+    
 }
 
 char tratarEspacoComentario()
@@ -1289,6 +1366,11 @@ void analisa_escreva()
             {
                 printf("ERRO! [ analisa_escreva] Faltou fecha parenteses na linha %d", line_counter);
             }
+
+            char encontrado_end[4] = {0};
+            snprintf(encontrado_end, sizeof(encontrado_end), "%s", encontrado->memoria);
+            Gera("    ", "LDV     ", encontrado_end, "    ");
+            Gera("    ", "PRN     ", "    ", "    ");
         }
         else
         {
@@ -1299,10 +1381,12 @@ void analisa_escreva()
     {
         printf("ERRO! [ analisa_escreva] Faltou abre parenteses na linha %d", line_counter);
     }
+
 }
 
 void analisa_leia()
 {
+
     // Feito
     AnalisadorLexical();
     if (strcmp(token.simbolo, "sabre_parenteses") == 0)
@@ -1333,6 +1417,13 @@ void analisa_leia()
             {
                 printf("ERRO!: [ analisa_leia] Diferente de fecha parenteses  Linha:%d", line_counter);
             }
+            
+            Gera("    ", "RD      ", "    ", "    ");
+    
+            char encontrado_end[4];
+            snprintf(encontrado_end, sizeof(encontrado_end), "%s", encontrado->memoria);
+            Gera("    ", "STR     ", encontrado_end, "    ");
+            
         }
         else
         {
@@ -1343,6 +1434,10 @@ void analisa_leia()
     {
         printf("ERRO!: [ analisa_leia ] Diferente de abre parenteses  Linha:%d", line_counter);
     }
+
+
+    
+    
 }
 
 void analisa_atribuicao(char identificador[50])
@@ -1379,7 +1474,7 @@ void analisa_atribuicao(char identificador[50])
     char memoria_str[5];  // 4 caracteres + '\0'
 
     // Converte encontrado->memoria para uma string de 4 caracteres
-    snprintf(memoria_str, sizeof(memoria_str), "%4d", encontrado->memoria);
+    snprintf(memoria_str, sizeof(memoria_str), "%s", encontrado->memoria);
 
     Gera("    ", "STR     ", encontrado->memoria, "    ");
 
@@ -1854,6 +1949,8 @@ void analisa_expressao()
         infixToPostfix(lista_infix);
         resp =  avaliarPostfix(lista_postfix_global);
         printf("RESP RESP: %s\n", resp);
+        gera_LDC_LDV(lista_postfix_global);
+
         gera_expressao(lista_postfix_global);
         resetListaInfix();
     }
@@ -1866,8 +1963,14 @@ void analisa_expressao_simples()
     if ((strcmp(token.simbolo, "smais") == 0) || (strcmp(token.simbolo, "smenos") == 0))
     {
         // sinal
-        addListaInFix("+-u");
-        AnalisadorLexical();
+
+        if (strcmp (token.simbolo, "smais") == 0) {
+            addListaInFix("+u");
+            AnalisadorLexical();
+        } else {
+            addListaInFix("-u");
+            AnalisadorLexical();
+        }
         // addListaInFix(token.lexema);
     }
 
@@ -1889,7 +1992,7 @@ void analisa_termo()
 {
     // feito
     analisa_fator();
-
+    // FREITAS, SE VOCE ESTÁ LENDO ISSO SAIBA QUE EU QUASE PULEI DA PONTE NESSE DIA
     while (strcmp(token.simbolo, "smult") == 0 || strcmp(token.simbolo, "sdiv") == 0 || strcmp(token.simbolo, "se") == 0)
     {
         addListaInFix(token.lexema);
@@ -1906,7 +2009,7 @@ void analisa_fator()
 
     if (strcmp(token.simbolo, "sidentificador") == 0)
     {
-
+        
         Identificador *encontrado = buscarIdentificador(tabelaSimbolos, token.lexema);
         if (encontrado != NULL)
         {
@@ -2017,6 +2120,9 @@ int main()
     // Gera("Teste", NULL, "1", "2");
 
     // Lembre de while != EOF
+    
+    limparArquivo();
+    
     printf("abri o arquivo penis caralho");
 
     ROTULO = 1;

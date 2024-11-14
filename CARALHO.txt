@@ -28,7 +28,7 @@ fim;
       u: booleano;
   inicio
     leia (x);   {para parar digite um valor maior que 9 }
-    se (x <= 10 + 5)
+    se (x <= -10)
     entao ler;               
   fim; 
   
