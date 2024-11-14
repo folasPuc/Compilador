@@ -6,6 +6,8 @@ import time
 
     #instruçoes: /LDC, /LDV, /ADD, /SUB, /MULT, /DIVI, /INV, /AND, /OR, /NEG, /CME, /CMA, /CEQ, /CDIF, /CMEQ, /CMAQ, STR, JMP, JMPF, NULL, START, ALLOC, DALLOC, RD, PRN, HLT, CALL, RETURN
 
+stack_pointer = -1
+
 def carregar_arquivo():
     filepath = filedialog.askopenfilename(filetypes=[("Object Files", "*.obj")])
     if filepath:
@@ -75,154 +77,164 @@ def executar():
                 time.sleep(1)  # Pausa para simular o passo a passo
 
 def LDC(valor):
-    endereco = len(pilha)
-    pilha[endereco] = valor
+    global stack_pointer
+    stack_pointer += 1
+    pilha[stack_pointer] = valor
     atualizar_pilha()
-    output_text.insert(tk.END, f"Carregado valor {valor} na posição {endereco}\n")
+    output_text.insert(tk.END, f"Carregado valor {valor} na posição {stack_pointer}\n")
 
 def LDV(endereco):
+    global stack_pointer
+    stack_pointer += 1
     endereco = int(endereco)
 
     if endereco in pilha:
         valor = pilha[endereco]
-        pilha[len(pilha)] = valor
+        pilha[stack_pointer] = valor
         atualizar_pilha()
         output_text.insert(tk.END, f"Valor {valor} carregado do endereço {endereco}\n")
     else:
         output_text.insert(tk.END, f"Erro: Endereço {endereco} não encontrado na pilha\n")
 
 def ADD():
-    endereco = int(len(pilha) - 1)
+    global stack_pointer
 
-    resultado = int(pilha[endereco - 1]) + int(pilha[endereco])
-    pilha[len(pilha) - 1] = resultado
+    resultado = int(pilha[stack_pointer - 1]) + int(pilha[stack_pointer])
+    pilha[stack_pointer - 1] = resultado
+    stack_pointer -= 1
     atualizar_pilha()
 
 def SUB():
-    endereco = int(len(pilha) - 1)
+    global stack_pointer
 
-    resultado = int(pilha[endereco - 1]) - int(pilha[endereco])
-    pilha[len(pilha) - 1] = resultado
+    resultado = int(pilha[stack_pointer - 1]) - int(pilha[stack_pointer])
+    pilha[stack_pointer - 1] = resultado
+    stack_pointer -= 1
     atualizar_pilha()
 
 def MULT():
-    endereco = int(len(pilha) - 1)
+    global stack_pointer
 
-    resultado = int(pilha[endereco - 1]) * int(pilha[endereco])
-    pilha[len(pilha) - 1] = resultado
+    resultado = int(pilha[stack_pointer - 1]) * int(pilha[stack_pointer])
+    pilha[stack_pointer - 1] = resultado
+    stack_pointer -= 1
     atualizar_pilha()
 
 def DIVI():
-    endereco = int(len(pilha) - 1)
+    global stack_pointer
 
-    resultado = int(pilha[endereco - 1]) / int(pilha[endereco])
-    pilha[len(pilha) - 1] = resultado
+    resultado = int(pilha[stack_pointer - 1]) / int(pilha[stack_pointer])
+    pilha[stack_pointer - 1] = resultado
+    stack_pointer -= 1
     atualizar_pilha()
 
 def INV():
-    endereco = int(len(pilha) - 1)
+    global stack_pointer
 
-    pilha[endereco] = -int(pilha[endereco])
+    pilha[stack_pointer] = -int(pilha[stack_pointer])
     atualizar_pilha()
 
 def AND():
-    endereco = int(len(pilha) - 1)
+    global stack_pointer
 
-    if (pilha[endereco - 1] == "1") and (pilha[endereco] == "1"):
-        pilha[endereco - 1] = 1
+    if (pilha[stack_pointer - 1] == "1") and (pilha[stack_pointer] == "1"):
+        pilha[stack_pointer - 1] = 1
     else:
-        pilha[endereco - 1] = 0
-    
+        pilha[stack_pointer - 1] = 0
+    stack_pointer -= 1
     atualizar_pilha()
 
 def OR():
-    endereco = int(len(pilha) - 1)
+    global stack_pointer
 
-    if (pilha[endereco - 1] == "1") or (pilha[endereco] == "1"):
-        pilha[endereco - 1] = 1
+    if (pilha[stack_pointer - 1] == "1") or (pilha[stack_pointer] == "1"):
+        pilha[stack_pointer - 1] = 1
     else:
-        pilha[endereco - 1] = 0
-    
+        pilha[stack_pointer - 1] = 0
+    stack_pointer -= 1
     atualizar_pilha()
 
 def NEG():
-    endereco = int(len(pilha) - 1)
+    global stack_pointer
 
-    pilha[endereco] = 1 - int(pilha[endereco])
+    pilha[stack_pointer] = 1 - int(pilha[stack_pointer])
     atualizar_pilha()
 
 def CME():
-    endereco = int(len(pilha) - 1)
+    global stack_pointer
 
-    if pilha[endereco - 1] < pilha[endereco]:
-        pilha[endereco - 1] = "1"    
+    if pilha[stack_pointer - 1] < pilha[stack_pointer]:
+        pilha[stack_pointer - 1] = "1"    
     else:
-        pilha[endereco - 1] = "0"
-
+        pilha[stack_pointer - 1] = "0"
+    stack_pointer -= 1
     atualizar_pilha()
 
 def CMA():
-    endereco = int(len(pilha) - 1)
+    global stack_pointer
 
-    if pilha[endereco - 1] > pilha[endereco]:
-        pilha[endereco - 1] = "1"    
+    if pilha[stack_pointer - 1] > pilha[stack_pointer]:
+        pilha[stack_pointer - 1] = "1"    
     else:
-        pilha[endereco - 1] = "0"
-
+        pilha[stack_pointer - 1] = "0"
+    stack_pointer -= 1
     atualizar_pilha()
 
 def CEQ():
-    endereco = int(len(pilha) - 1)
+    global stack_pointer
 
-    if pilha[endereco - 1] == pilha[endereco]:
-        pilha[endereco - 1] = "1"    
+    if pilha[stack_pointer - 1] == pilha[stack_pointer]:
+        pilha[stack_pointer - 1] = "1"    
     else:
-        pilha[endereco - 1] = "0"
-
+        pilha[stack_pointer - 1] = "0"
+    stack_pointer -= 1
     atualizar_pilha()
 
 def CDIF():
-    endereco = int(len(pilha) - 1)
+    global stack_pointer
 
-    if pilha[endereco - 1] != pilha[endereco]:
-        pilha[endereco - 1] = "1"    
+    if pilha[stack_pointer - 1] != pilha[stack_pointer]:
+        pilha[stack_pointer - 1] = "1"    
     else:
-        pilha[endereco - 1] = "0"
-
+        pilha[stack_pointer - 1] = "0"
+    stack_pointer -= 1
     atualizar_pilha()
 
 def CMEQ():
-    endereco = int(len(pilha) - 1)
+    global stack_pointer
 
-    if pilha[endereco - 1] <= pilha[endereco]:
-        pilha[endereco - 1] = "1"    
+    if pilha[stack_pointer - 1] <= pilha[stack_pointer]:
+        pilha[stack_pointer - 1] = "1"    
     else:
-        pilha[endereco - 1] = "0"
-
+        pilha[stack_pointer - 1] = "0"
+    stack_pointer -= 1
     atualizar_pilha()
 
 def CMAQ():
-    endereco = int(len(pilha) - 1)
+    global stack_pointer
 
-    if pilha[endereco - 1] >= pilha[endereco]:
-        pilha[endereco - 1] = "1"    
+    if pilha[stack_pointer - 1] >= pilha[stack_pointer]:
+        pilha[stack_pointer - 1] = "1"    
     else:
-        pilha[endereco - 1] = "0"
-
+        pilha[stack_pointer - 1] = "0"
+    stack_pointer -= 1
     atualizar_pilha()
 
-#TODO: IMPLEMENTAR STACKPOINTER EM TODAS AS FUNÇÕES ANTES DE IMPLEMENTAR O STR
+def STR(endereco):
+    print("a")
 
 def atualizar_pilha():
+    global stack_pointer
     for row in tree_pilha.get_children():
         tree_pilha.delete(row)
     
     for endereco, valor in pilha.items():
         tree_pilha.insert("", "end", values=(endereco, valor))
 
+    output_text.insert(tk.END, f"Stack pointer atual: {stack_pointer}\n")
+
 def parar():
     output_text.insert(tk.END, "Execução Parada\n")
-
 
 
 
