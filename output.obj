@@ -1,55 +1,47 @@
     ALLOC   0   3   
-    ALLOC   3   1   
     JMP     1       
-4212                
-    LDV     0    
-    STR     1    
-    ALLOC   4   3   
-    ALLOC   7   1   
-    JMP     1       
-1                   
-    ALLOC   8   3   
-    ALLOC   11  1   
-4212                
+2   NULL            
+    ALLOC   3   3   
+    ALLOC   6   1   
+    JMP     3       
+4   NULL 5            
+5   NULL   4        
     RD              
-    STR     8    
+    STR     4    
     RD              
-    STR     10    
-    LDV     5    
-    LDV     1    
-    LDC     9    
-    LDC     3    
-    LDV     10    
-    DIVI            
-    SUB             
-    MULT            
-    ADD             
-    STR     9    
-    LDC     f       
-    STR     11    
+    STR     5    
     CALL    2       
+    LDV     0       
+    STR     6    
+    LDV     6    
+    PRN             
+    RETURN          
+5   NULL 5            
+    ALLOC   7   1   
+6   NULL   4        
+    RD              
     STR     8    
     LDV     8    
-    PRN             
-2                   
-    ALLOC   12  3   
-    ALLOC   15  1   
-4212                
-    RD              
-    STR     12    
-    LDV     12    
     LDC     10    
-    INV             
-    CMEQ            
-1                   
+    CME             
+    JMP     6       
+    CALL    4       
+6   NULL   3        
+    DALLOC  7   1   
+    RETURN          
+3   NULL   4        
+    CALL    5       
     LDV     4    
     LDV     5    
     ADD             
-    STR     1    
-1                   
-    CALL    3       
-    STR     2    
-    LDV     2    
+    STR     0       
+    DALLOC  1   6   
+    RETURN          
+1   NULL   4        
+    CALL    2       
+    LDV     0       
+    STR     3    
+    LDV     3    
     PRN             
-    CALL    3       
-    STR     0    
+    DALLOC  -3  4   
+    HLT             

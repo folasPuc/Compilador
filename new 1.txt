@@ -1,6 +1,6 @@
 programa test;
 var a,b,s: inteiro;
-    d: booleano;                
+    d: booleano;           
                               
  funcao soma: inteiro;
  var c,a,s: inteiro;                   
