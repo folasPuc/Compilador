@@ -239,21 +239,27 @@ void desempilharAteMarca(Identificador **head)
     // Percorrer a lista até encontrar a "MARCA" ("L")
     while (atual != NULL && strcmp(atual->escopo, "L") != 0)
     {
-        if (strcmp(atual->escopo, "L") == 0) {
-            printf("PORRA SOCOROR CARALHO");
-            break;
+
+        printf("atual: %s", atual->nome);
+        if(strcmp(atual->tipo, "procedimento") != 0 && strcmp(atual->tipo, "funcao inteiro") != 0 && strcmp(atual->tipo, "funcao booleano") != 0) {
+            count++;
+            printf("\nATUAL SENDO DESEMP: %s", atual->nome);
+            printf("\nValor do count: %d", count);
+        } else { 
+        printf("\nidentificador sendo desemp [%s], tipo [%s]\n", atual->nome, atual->tipo);
+        printf("\nvalor do count porra %d\n", count);
+        free(anterior); // Liberar a memória do identificador desempilhado
         }
+
         anterior = atual;
         atual = atual->proximo;
-        count++;
-        printf("\nidentificador sendo desemp [%s], escopo [%s]\n", atual->nome, atual->escopo);
-        free(anterior); // Liberar a memória do identificador desempilhado
     }
 
     // Se encontramos a marca
     if (atual != NULL)
     {
         strcpy(atual->escopo, ""); // Remover a marca, não o nó
+        printf("removendo a marca do proc/func : %s", atual->nome);
     }
     else
     {
@@ -1777,7 +1783,7 @@ void analisa_se()
     }
 
     snprintf(rotulo_str, sizeof(rotulo_str), "%-4d", ROTULO);
-    Gera("    ", "JMP     ", rotulo_str, "    ");
+    Gera("    ", "JMPF    ", rotulo_str, "    ");
 
     if (strcmp(token.simbolo, "sentao") == 0)
     {
@@ -1858,10 +1864,8 @@ void analisa_subrotinas()
     if(flag = 1){
 
         snprintf(rotulo_str, sizeof(rotulo_str), "%-4d", auxiliar_rotulo);
-        printf("VALOR DO ROTULOSTR PENIS: %s", rotulo_str);
         Gera(rotulo_str, "NULL   4", "    ", "    ");
 
-        printf("aaaa %s", token.lexema);
 
     }
 
