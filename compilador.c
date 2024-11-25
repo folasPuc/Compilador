@@ -1730,7 +1730,7 @@ void analisa_enquanto()
     // Transforma rotulo 1 em string
     auxiliar_rotulo_1 = ROTULO;
     snprintf(rotulo_str, sizeof(rotulo_str), "%-4d", ROTULO);
-    Gera(rotulo_str, "NULL   1", "    ", "    ");
+    Gera(rotulo_str, "NULL    ", "    ", "    ");
     
     ROTULO = ROTULO + 1; 
 
@@ -1805,14 +1805,14 @@ void analisa_se()
             analisa_comando_simples();
  
             snprintf(rotulo_str, sizeof(rotulo_str), "%-4d", auxiliar1);
-            Gera(rotulo_str, "NULL   2", "    ", "    ");
+            Gera(rotulo_str, "NULL    ", "    ", "    ");
 
             auxiliar1 = auxiliar2;
         
         }
 
         snprintf(rotulo_str, sizeof(rotulo_str), "%-4d", auxiliar1);
-        Gera(rotulo_str, "NULL   3", "    ", "    ");
+        Gera(rotulo_str, "NULL    ", "    ", "    ");
         
         
     }else{
@@ -1864,7 +1864,7 @@ void analisa_subrotinas()
     if(flag = 1){
 
         snprintf(rotulo_str, sizeof(rotulo_str), "%-4d", auxiliar_rotulo);
-        Gera(rotulo_str, "NULL   4", "    ", "    ");
+        Gera(rotulo_str, "NULL    ", "    ", "    ");
 
 
     }
@@ -1895,7 +1895,7 @@ void analisa_declaracao_procedimento()
         
         inserirIdentificador(&tabelaSimbolos, token.lexema, nivel, "procedimento", rotulo_str);
         
-        Gera(rotulo_str, "NULL 5    ", "    ", "    ");
+        Gera(rotulo_str, "NULL    ", "    ", "    ");
 
         ROTULO = ROTULO + 1;
         AnalisadorLexical();
@@ -2210,6 +2210,21 @@ int main()
         AnalisadorLexical();
         if (strcmp(token.simbolo, "sidentificador") == 0)
         {
+
+            // Formata end_string e alocado com largura fixa de 4 caracteres
+            char end_string[5] = {0};
+            char alocado[5] = {0};
+            int func = 1;
+            snprintf(end_string, sizeof(end_string), "%-4d", end_disp_momento);
+            snprintf(alocado, sizeof(alocado), "%-4d", func);
+
+            Gera("    ", "START   ", "    ", "    ");
+    
+            Gera("    ", "ALLOC   ", end_string, alocado);
+
+            end_disp_momento += func;
+
+
             inserirIdentificador(&tabelaSimbolos, token.lexema, "L", "tipo - nomeDoPrograma", "penisprograma");
             AnalisadorLexical();
             if (strcmp(token.simbolo, "sponto_virgula") == 0)
@@ -2225,6 +2240,17 @@ int main()
                     snprintf(pos_desaloc, sizeof(pos_desaloc), "%-4d", result_pos_dalloc);
                     Gera("    ", "DALLOC  ", pos_desaloc, quant_desaloc);
                     end_disp_momento = result_pos_dalloc;
+
+
+                    snprintf(quant_desaloc, sizeof(quant_desaloc), "%-4d", func);
+                    result_pos_dalloc = end_disp_momento - func;
+                    snprintf(pos_desaloc, sizeof(pos_desaloc), "%-4d", result_pos_dalloc);
+                    
+                    Gera("    ", "DALLOC  ", pos_desaloc, quant_desaloc);
+                    end_disp_momento = result_pos_dalloc;
+
+
+
                     Gera("    ", "HLT     ", "    ", "    ");
 
                     AnalisadorLexical();
