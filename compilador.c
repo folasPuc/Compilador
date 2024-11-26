@@ -1776,11 +1776,11 @@ void analisa_se()
 
     snprintf(rotulo_str, sizeof(rotulo_str), "%-4d", ROTULO);
     Gera("    ", "JMPF    ", rotulo_str, "    ");
+        auxiliar1 = ROTULO;
+        ROTULO++;
 
     if (strcmp(token.simbolo, "sentao") == 0)
     {
-        auxiliar1 = ROTULO;
-        ROTULO++;
         
         AnalisadorLexical();
         analisa_comando_simples();
@@ -1793,15 +1793,16 @@ void analisa_se()
             auxiliar2 = ROTULO;
             ROTULO++;
 
-            AnalisadorLexical();
-            analisa_comando_simples();
- 
             snprintf(rotulo_str, sizeof(rotulo_str), "%-4d", auxiliar1);
             Gera(rotulo_str, "NULL    ", "    ", "    ");
 
             auxiliar1 = auxiliar2;
+
+            AnalisadorLexical();
+            analisa_comando_simples();
+
         
-        }
+         }
 
         snprintf(rotulo_str, sizeof(rotulo_str), "%-4d", auxiliar1);
         Gera(rotulo_str, "NULL    ", "    ", "    ");
