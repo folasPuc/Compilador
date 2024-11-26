@@ -1751,7 +1751,7 @@ void analisa_enquanto()
         Gera("    ", "JMP    ", auxiliar1_str, "    ");
 
         snprintf(auxiliar2_str, sizeof(auxiliar2_str), "%-4d", auxiliar_rotulo_2);
-        Gera(auxiliar2_str, "        ", "    ", "    ");
+        Gera(auxiliar2_str, "NULL    ", "    ", "    ");
         
     }
     else
