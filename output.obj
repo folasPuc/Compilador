@@ -18,21 +18,21 @@
     LDV     6    
     PRN             
     RETURN          
-5   NULL            
-    ALLOC   8   1   
 6   NULL            
+    ALLOC   8   1   
+7   NULL            
     RD              
     STR     8    
     LDV     8    
     LDC     10    
     CME             
-    JMPF    6       
+    JMPF    8       
     CALL    4       
-6   NULL            
+8   NULL            
     DALLOC  8   1   
     RETURN          
 3   NULL            
-    CALL    5       
+    CALL    6       
     LDV     4    
     LDV     5    
     ADD             

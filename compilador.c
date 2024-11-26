@@ -1866,6 +1866,8 @@ void analisa_subrotinas()
         snprintf(rotulo_str, sizeof(rotulo_str), "%-4d", auxiliar_rotulo);
         Gera(rotulo_str, "NULL    ", "    ", "    ");
 
+        ROTULO++;
+
 
     }
 
