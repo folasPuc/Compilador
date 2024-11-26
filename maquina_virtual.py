@@ -11,6 +11,7 @@ program_instruction_counter = 0
 pilha = {}
 paused = False
 flag_passo_a_passo = False
+old_line = -1
 
 def carregar_arquivo():
     filepath = filedialog.askopenfilename(filetypes=[("Object Files", "*.obj")])
@@ -79,6 +80,9 @@ def executar():
     stack_pointer = -1
     pilha = {}
 
+    output_text.config(state=tk.NORMAL)
+    output_text.delete('1.0', tk.END)
+
     modo = "Normal" if modo_execucao.get() == 1 else "Passo a Passo"
     
     instrucoes = {
@@ -113,7 +117,7 @@ def executar():
 
     while program_instruction_counter < len(items):
 
-        print(stack_pointer)
+        #print(stack_pointer)
 
         if paused or flag_passo_a_passo:  # Se pausado, aguarde
             root.update()  # Mantenha a interface responsiva
@@ -126,6 +130,8 @@ def executar():
         tree.item(item, tags=("highlight",))
 
         tree.item(items[program_instruction_counter - 1], tags=("default",))
+        tree.item(items[old_line], tags=("default",))
+
         
         # Executa a instrução se ela existir
         if instrucao in instrucoes:
@@ -144,13 +150,13 @@ def executar():
         if instrucao == "RD":
             paused = True
 
-        if instrucao != "JMP" or instrucao != "JMPF" or instrucao != "CALL":
+        if (instrucao != "JMP") or (instrucao != "JMPF") or (instrucao != "CALL") or (instrucao != "RETURN"):
             program_instruction_counter += 1
-        else:
-            tree.item(items[atributo1], tags=("default",))
+            print(program_instruction_counter)
 
-
+    
     output_text.insert(tk.END, "Execução concluída.\n")
+    output_text.config(state=tk.DISABLED)
 
 def destrava_execucao():
     global flag_passo_a_passo
@@ -340,16 +346,20 @@ def STR(endereco):
 
 def JMP(linha):
 
+    global old_line
     global program_instruction_counter
     global pilha
+    old_line = program_instruction_counter
     linha = int(linha)
     program_instruction_counter = linha - 2
 
 def JMPF(linha):
 
+    global old_line
     global program_instruction_counter
     global stack_pointer
     global pilha
+    old_line = program_instruction_counter
     linha = int(linha)
 
     if(pilha[stack_pointer] == "0"):
@@ -369,7 +379,9 @@ def ALLOC(endereco_inicial, quantidade):
         stack_pointer += 1
         pilha[stack_pointer] = ""
         pilha[stack_pointer] = pilha[endereco_inicial + k]
-        pilha[endereco_inicial + k] = "?"
+        
+        if pilha[stack_pointer] == "":
+            pilha[endereco_inicial + k] = "?"
         atualizar_pilha()
         k += 1
 
@@ -435,6 +447,9 @@ def CALL(linha):
     global stack_pointer
     global pilha
     global program_instruction_counter
+    global old_line
+
+    old_line = program_instruction_counter
 
     linha = int(linha)
     stack_pointer += 1
@@ -448,6 +463,9 @@ def RETURN():
     global stack_pointer
     global pilha
     global program_instruction_counter
+    global old_line
+
+    old_line = program_instruction_counter
 
     program_instruction_counter = pilha[stack_pointer] - 2
     del pilha[max(pilha.keys())]
@@ -498,6 +516,7 @@ def atualizar_pilha():
 
 def parar():
     output_text.insert(tk.END, "Execução Parada\n")
+    #TODO: ajustar parada
 
 
 # Inicializa a janela principal
@@ -569,6 +588,7 @@ tree_pilha.pack(fill="both", expand=True)
 label_saida = tk.Label(frame_saida, text="Saída de Dados:")
 label_saida.pack()
 output_text = tk.Text(frame_saida, width=70, height=5)
+output_text.config(state=tk.DISABLED)
 output_text.pack(pady=20, padx=30)
 
 # Opções de modo de execução
