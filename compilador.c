@@ -240,14 +240,9 @@ void desempilharAteMarca(Identificador **head)
     while (atual != NULL && strcmp(atual->escopo, "L") != 0)
     {
 
-        printf("atual: %s", atual->nome);
         if(strcmp(atual->tipo, "procedimento") != 0 && strcmp(atual->tipo, "funcao inteiro") != 0 && strcmp(atual->tipo, "funcao booleano") != 0) {
             count++;
-            printf("\nATUAL SENDO DESEMP: %s", atual->nome);
-            printf("\nValor do count: %d", count);
         } else { 
-        printf("\nidentificador sendo desemp [%s], tipo [%s]\n", atual->nome, atual->tipo);
-        printf("\nvalor do count porra %d\n", count);
         free(anterior); // Liberar a memória do identificador desempilhado
         }
 
@@ -259,7 +254,6 @@ void desempilharAteMarca(Identificador **head)
     if (atual != NULL)
     {
         strcpy(atual->escopo, ""); // Remover a marca, não o nó
-        printf("removendo a marca do proc/func : %s", atual->nome);
     }
     else
     {
@@ -861,7 +855,6 @@ void gera_LDC_LDV(char lista_posfix[50][50]) {
 
                     snprintf(memoria_str, sizeof(memoria_str), "%s", encontrado->memoria);
                     Gera("    ", "LDV     ", memoria_str, "    ");
-                    printf("\nencontrado: %s, end: %s\n", encontrado->nome, encontrado->memoria);
                     }
                 }
             }
@@ -1627,7 +1620,6 @@ void analisa_variaveis()
 
                 inserirIdentificador(&tabelaSimbolos, token.lexema, "", "variavel", aloca_var_string);
                 aloca_var++;
-                printf("\n\nIdentificador: %s, end %s\n\n", token.lexema, aloca_var_string);
                 AnalisadorLexical();
                 if (strcmp(token.simbolo, "svirgula") == 0 || strcmp(token.simbolo, "sdoispontos") == 0)
                 {
@@ -1825,6 +1817,8 @@ void analisa_subrotinas()
     int auxiliar_rotulo = ROTULO, flag = 0; 
     char rotulo_str[5] = {0};
 
+    printf("\ntoken_subrotina: %s, linha %d\n", token.lexema, line_counter);
+
     // ESSA PARTE É GERAÇAO DE CODIGO !!!!!!!!! 
     if((strcmp(token.simbolo, "sprocedimento") == 0) || (strcmp(token.simbolo, "sfuncao") == 0)){
         auxiliar_rotulo = ROTULO;
@@ -1834,10 +1828,6 @@ void analisa_subrotinas()
         ROTULO++;
         
         flag = 1;
-
-        printf("CARALHO : %s", token.lexema);
-    } else {
-        ROTULO++;
     }
 
     // Feito
@@ -1847,7 +1837,7 @@ void analisa_subrotinas()
         {
             analisa_declaracao_funcao();
         }
-        else if (strcmp(token.simbolo, "sprocedimento") == 0)
+        else //if (strcmp(token.simbolo, "sprocedimento") == 0)
         {
             analisa_declaracao_procedimento();
         }
@@ -1863,12 +1853,10 @@ void analisa_subrotinas()
     }
 
     // ESSA PARTE É GERAÇAO DE CODIGO !!!!!!!!! 
-    if(flag = 1){
+    if(flag == 1){
 
         snprintf(rotulo_str, sizeof(rotulo_str), "%-4d", auxiliar_rotulo);
         Gera(rotulo_str, "NULL    ", "    ", "    ");
-
-
     }
 
 
@@ -1877,7 +1865,7 @@ void analisa_subrotinas()
 
 void analisa_declaracao_procedimento()
 {
-    char rotulo_str[5];
+    char rotulo_str[5] = {0};
     // Feito
     AnalisadorLexical();
     char nivel[3] = "L";
