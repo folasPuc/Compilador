@@ -2309,9 +2309,6 @@ int main()
         exit(0);
     }
 
-    printf("Tabela de Símbolos:\n");
-    imprimirTabelaSimbolos(tabelaSimbolos);
-
     liberarTabelaSimbolos(tabelaSimbolos);
 
     // printf("\nLista Infix: \n");
