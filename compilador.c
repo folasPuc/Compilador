@@ -225,6 +225,7 @@ void addListaInFix(const char *termo)
     else
     {
         printf("Erro: Lista de infix está cheia!\n");
+        exit(0);
     }
 }
 
@@ -432,7 +433,8 @@ const char* avaliarPostfix(char lista_postfix[50][50])
                             strcpy(tipo1, encontrado->tipo);
                             strcpy(stack[top], tipo1);
                         } else {
-                            printf("Erro, tipo1 incompativel no +-*");
+                            printf("Erro, tipo1 incompativel no +-*, %d", line_counter);
+                            exit(0);
                         }
 
                     } else {
@@ -460,7 +462,8 @@ const char* avaliarPostfix(char lista_postfix[50][50])
                             strcpy(tipo2, encontrado->tipo);
                             strcpy(stack[top], tipo2);
                         } else {
-                            printf("Erro, tipo2 incompativel no +-* ");
+                            printf("Erro, tipo2 incompativel no +-*, linha %d ", line_counter);
+                            exit(0);
                         }
 
                     } else {
@@ -501,7 +504,8 @@ const char* avaliarPostfix(char lista_postfix[50][50])
                             strcpy(tipo1, encontrado->tipo);
                             strcpy(stack[top], tipo1);
                         } else {
-                            printf("Erro, tipo1 incompativel no relacional");
+                            printf("Erro, tipo1 incompativel no relacional, linha %d", line_counter);
+                            exit(0);
                         }
 
                     } else {
@@ -529,7 +533,8 @@ const char* avaliarPostfix(char lista_postfix[50][50])
                             strcpy(tipo2, encontrado->tipo);
                             strcpy(stack[top], tipo2);
                         } else {
-                            printf("Erro, tipo2 incompativel no relacional ");
+                            printf("Erro, tipo2 incompativel no relacional, linha %d ", line_counter);
+                            exit(0);
                         }
 
                     } else {
@@ -565,14 +570,14 @@ const char* avaliarPostfix(char lista_postfix[50][50])
                             strcpy(tipo1, encontrado->tipo);
                             strcpy(stack[top], tipo1);
                         } else {
-                            printf("Erro, tipo1 incompativel no e/ou");
+                            printf("Erro, tipo1 incompativel no e/ou, linha %d", line_counter);
                         }
 
                     } else {
                         
                     }
                 } else {
-                    printf("Tipo1 incompativel");
+                    printf("Tipo1 incompativel, linha %d", line_counter);
                 }
             }
 
@@ -592,14 +597,14 @@ const char* avaliarPostfix(char lista_postfix[50][50])
                             strcpy(tipo2, encontrado->tipo);
                             strcpy(stack[top], tipo2);
                         } else {
-                            printf("Erro, tipo2 incompativel no e/ou prob numero ");
+                            printf("Erro, tipo2 incompativel no e/ou prob numero, linha %d ", line_counter);
                         }
 
                     } else {
                         
                     }
                 } else {
-                    printf("Tipo2 incompativel");
+                    printf("Tipo2 incompativel, linha %d", line_counter);
                 }
             }
 
@@ -632,7 +637,7 @@ const char* avaliarPostfix(char lista_postfix[50][50])
                             strcpy(tipo1, encontrado->tipo);
                             strcpy(stack[top], tipo1);
                         } else {
-                            printf("Erro, tipo incompativel no +-u");
+                            printf("Erro, tipo incompativel no +-u, linha %d", line_counter);
                         }
 
                     } else {
@@ -664,14 +669,14 @@ const char* avaliarPostfix(char lista_postfix[50][50])
                             strcpy(tipo1, encontrado->tipo);
                             strcpy(stack[top], tipo1);
                         } else {
-                            printf("Erro, tipo1 incompativel no nao");
+                            printf("Erro, tipo1 incompativel no nao, linha %d", line_counter);
                         }
 
                     } else {
                         
                     }
                 } else {
-                    printf("Tipo1 incompativel");
+                    printf("Tipo1 incompativel, linha %d", line_counter);
                 }
                 }
 
@@ -700,7 +705,7 @@ const char* avaliarPostfix(char lista_postfix[50][50])
                     
                     strcpy(stack[top], "booleano");
                 } else {
-                    printf("erro penis");
+                    printf("Identificador irregular na postfix");
                     exit(0);
                 }
             }
@@ -846,6 +851,7 @@ void gera_LDC_LDV(char lista_posfix[50][50]) {
 
                     if(encontrado == NULL){
                         printf("[gera_LDC_LDV] - Indentificador nao encontrado");
+                        exit(0);
                     }
 
                     if((strcmp(encontrado->tipo, "funcao inteiro") == 0 || strcmp(encontrado->tipo, "funcao booleano") == 0 || strcmp (encontrado->tipo, "procedimento") == 0)){
@@ -1100,6 +1106,7 @@ void TratarOperadorRelacional()
         else
         {
             printf("\n\nTOKEN INVALIDO");
+            exit(0);
         }
         break;
 
@@ -1149,6 +1156,7 @@ void TratarOperadorRelacional()
 
     default:
         printf("\n\nERRO NA LEITURA DOS OPERADORES RELACIONAIS");
+        exit(0);
     }
 
     return;
@@ -1280,6 +1288,7 @@ void AnalisadorLexical()
     else
     {
         printf("\nCaracter invalido: %c\nLinha %d", ch, line_counter);
+        exit(0);
     }
 
     return;
@@ -1292,10 +1301,10 @@ void AnalisadorLexical()
 void analisa_chamada_procedimento(char identificador[50])
 {
 
-    if (strcmp(token.simbolo, "sponto_virgula") == 1)
-    {
-        printf("ERRO! [ Analisa_chamada_procedimento ]- diferente de identificador linha:%d", line_counter);
-    }
+    // if (strcmp(token.simbolo, "sponto_virgula") != 0)
+    // {
+    //     printf("ERRO! [ Analisa_chamada_procedimento ]- diferente de ponto e virgula linha:%d", line_counter);
+    // }
 
     Identificador *encontrado = buscarIdentificador(tabelaSimbolos, identificador);
     if (encontrado == NULL)
@@ -1337,6 +1346,7 @@ void analisa_chamada_funcao()
     else
     {
         printf("ERRO! [ Analisa_chamada_funcao ]- diferente de identificador %s linha:%d", token.lexema, line_counter);
+        exit(0);
     }
 }
 
@@ -1370,6 +1380,7 @@ void analisa_escreva()
             else
             {
                 printf("ERRO! [ analisa_escreva] Faltou fecha parenteses na linha %d", line_counter);
+                exit(0);
             }
 
             char encontrado_end[4] = {0};
@@ -1380,11 +1391,13 @@ void analisa_escreva()
         else
         {
             printf("ERRO! [ analisa_escreva] Faltou identificador na linha %d", line_counter);
+            exit(0);
         }
     }
     else
     {
         printf("ERRO! [ analisa_escreva] Faltou abre parenteses na linha %d", line_counter);
+        exit(0);
     }
 
 }
@@ -1406,7 +1419,6 @@ void analisa_leia()
                 // nao encontrou, da erro
                 printf("[Analisa leia] - Identificador nao declarado na linha %d", line_counter);
                 exit(0);
-                return;
             }
 
             if (strcmp(encontrado->tipo, "inteiro") != 0) { //compara se nao eh penis
@@ -1421,6 +1433,7 @@ void analisa_leia()
             else
             {
                 printf("ERRO!: [ analisa_leia] Diferente de fecha parenteses  Linha:%d", line_counter);
+                exit(0);
             }
             
             Gera("    ", "RD      ", "    ", "    ");
@@ -1433,11 +1446,13 @@ void analisa_leia()
         else
         {
             printf("ERRO!: [ analisa_leia ] Diferente indentificador  Linha:%d", line_counter);
+            exit(0);
         }
     }
     else
     {
         printf("ERRO!: [ analisa_leia ] Diferente de abre parenteses  Linha:%d", line_counter);
+        exit(0);
     }
 
 
@@ -1568,8 +1583,8 @@ void analisa_comandos()
             }
             else
             {
-                printf("[%s] -- [%s]", token.simbolo, token.lexema);
                 printf("ERRO! [ analisa_comandos ] - analisa comandos Esperava ponto e virgula na linha %d", line_counter);
+                exit(0);
             }
         }
 
@@ -1578,6 +1593,7 @@ void analisa_comandos()
     else
     {
         printf("ERRO! [ analisa_comandos ] esperava sinicio na linha %d", line_counter);
+        exit(0);
     }
 }
 
@@ -1587,7 +1603,7 @@ void analisa_tipo()
     if ((strcmp(token.simbolo, "sinteiro") != 0) && (strcmp(token.simbolo, "sbooleano") != 0))
     {
         printf("ERRO!: [ analisa_tipo ]  tipo invalido : %d", line_counter);
-        return;
+        exit(0);
     }
     else
     {
@@ -1631,12 +1647,14 @@ void analisa_variaveis()
                         if (strcmp(token.simbolo, "sdoispontos") == 0)
                         {
                             printf("ERRO!: [ Analisa_variaveis ] - diferente de dois pontos - Linha:%d", line_counter);
+                            exit(0);
                         }
                     }
                 }
                 else
                 {
                     printf("ERRO!: [ Analisa_variaveis ] - diferente de dois pontos e virgula - Linha:%d", line_counter);
+                    exit(0);
                 }
             }
             else
@@ -1647,8 +1665,8 @@ void analisa_variaveis()
         }
         else
         {
-            Sleep(2);
             printf("ERRO!: [ Analisa_variaveis ] - diferente de indentificador - Linha:%d TOKEN: %s", line_counter, token.simbolo);
+            exit(0);
         }
 
     } while (strcmp(token.simbolo, "sdoispontos") != 0);
@@ -1688,12 +1706,14 @@ void analisa_et_variaveis()
                 else
                 {
                     printf("ERRO!: [ analisa_et_variaveis ] - diferente de ponto e virgula - Linha:%d", line_counter);
+                    exit(0);
                 }
             }
         }
         else
         {
             printf("ERRO!: [ Analisa_et_variaveis ]- diferente de indetificador - Linha:%d", line_counter);
+            exit(0);
         }
     }
 }
@@ -1757,6 +1777,7 @@ void analisa_enquanto()
     else
     {
         printf("ERRO! [ analisa_enquanto ] Esperava simbolo FACA na linha %d", line_counter);
+        exit(0);
     }
 }
 
@@ -1810,6 +1831,7 @@ void analisa_se()
         
     }else{
         printf("ERRO! [ analisa_se ] esperava ENTAO na linha %d", line_counter);
+        exit(0);
     }
 }
 
@@ -1818,7 +1840,6 @@ void analisa_subrotinas()
     int auxiliar_rotulo = ROTULO, flag = 0; 
     char rotulo_str[5] = {0};
 
-    printf("\ntoken_subrotina: %s, linha %d\n", token.lexema, line_counter);
 
     // ESSA PARTE É GERAÇAO DE CODIGO !!!!!!!!! 
     if((strcmp(token.simbolo, "sprocedimento") == 0) || (strcmp(token.simbolo, "sfuncao") == 0)){
@@ -1850,6 +1871,7 @@ void analisa_subrotinas()
         else
         {
             printf("ERRO! [ analisa_subrotinas ] Esperava ponto e virgula na linha %d", line_counter);
+            exit(0);
         }
     }
 
@@ -1877,7 +1899,7 @@ void analisa_declaracao_procedimento()
         {
             // Encontrou
             printf("[Analisa declaracao procedimento] - Procedimento ja declarado, linha %d", line_counter);
-            return;
+            exit(0);
         }
 
         // ESSA PARTE É GERAÇAO DE CODIGO !!!!!!!!! 
@@ -1897,11 +1919,13 @@ void analisa_declaracao_procedimento()
         else
         {
             printf("ERRO! [analisa_declaracao_procedimento] esperava ponto e virgula na linha %d", line_counter);
+            exit(0);
         }
     }
     else
     {
         printf("ERRO! [analisa_declaracao_procedimento] identificador na linha %d", line_counter);
+        exit(0);
     }
 
     // DESEMPILHA
@@ -1963,21 +1987,25 @@ void analisa_declaracao_funcao()
                 else
                 {
                     printf("ERRO! [ analisa_declaracao_funcao ] esperava tipo da funcao (inteiro ou booleano) na linha %d", line_counter);
+                    exit(0);
                 }
             }
             else
             {
                 printf("ERRO!  [ analisa_declaracao_funcao ] esperava dois pontos na linha %d", line_counter);
+                exit(0);
             }
         }
         else
         {
             printf("ERRO! [ analisa_declaracao_funcao ] Identificador nao foi encontrado na tabela %d", line_counter);
+            exit(0);
         }
     }
     else
     {
         printf("ERRO! [ analisa_declaracao_funcao ] esperava identificador na linha %d", line_counter);
+        exit(0);
     }
     desempilharAteMarca(&tabelaSimbolos);
     if (end_var == 0) {
@@ -2131,6 +2159,7 @@ void analisa_fator()
         else
         {
             printf("\n\n ERRO -- Falta de fechar parenteses\n\n");
+            exit(0);
         }
     }
     else if ((strcmp(token.lexema, "verdadeiro") == 0) || (strcmp(token.lexema, "falso") == 0))
@@ -2253,26 +2282,31 @@ int main()
                     else
                     {
                         printf("ERRO!: Diferente de End of File.  Linha:%d", line_counter);
+                        exit(0);
                     }
                 }
                 else
                 {
                     printf("ERRO!: Diferente de Ponto.  Linha:%d", line_counter);
+                    exit(0);
                 }
             }
             else
             {
                 printf("ERRO!: Diferente de Ponto e virgula.  Linha:%d", line_counter);
+                exit(0);
             }
         }
         else
         {
             printf("\nERRO! Faltou identificador do programa na linha %d", line_counter);
+            exit(0);
         }
     }
     else
     {
         printf("\nERRO! Esperava PROGRAMA na linha %d", line_counter);
+        exit(0);
     }
 
     printf("Tabela de Símbolos:\n");
