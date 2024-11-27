@@ -12,6 +12,7 @@ pilha = {}
 paused = False
 flag_passo_a_passo = False
 old_line = -1
+flag_execucao = True
 
 def carregar_arquivo():
     filepath = filedialog.askopenfilename(filetypes=[("Object Files", "*.obj")])
@@ -76,11 +77,13 @@ def executar():
     global paused
     global flag_passo_a_passo
     global old_line
+    global flag_execucao
 
     program_instruction_counter = 0
     stack_pointer = -1
     old_line = -1
     pilha = {}
+    flag_execucao = True
 
     output_text.config(state=tk.NORMAL)
     output_text.delete('1.0', tk.END)
@@ -117,7 +120,7 @@ def executar():
 
     items = tree.get_children()
 
-    while program_instruction_counter < len(items):
+    while program_instruction_counter < len(items) and flag_execucao:
 
         #print(stack_pointer)
 
@@ -516,9 +519,18 @@ def atualizar_pilha():
     for endereco, valor in pilha.items():
         tree_pilha.insert("", "end", values=(endereco, valor))
 
-def parar():
+def parar_execucao():
+
+    global flag_execucao
+
+    items = tree.get_children()
+
+    flag_execucao = False
+    tree.item(items[program_instruction_counter - 1], tags=("default",))
+    tree.item(items[old_line], tags=("default",))
+
     output_text.insert(tk.END, "Execução Parada\n")
-    #TODO: ajustar parada
+    
 
 
 # Inicializa a janela principal
@@ -602,7 +614,7 @@ radio_passo.pack(anchor="w")
 
 # Botões de execução e parada
 botao_executar = tk.Button(frame_botoes, text="Executar", command=executar)
-botao_parar = tk.Button(frame_botoes, text="Parar", command=parar)
+botao_parar = tk.Button(frame_botoes, text="Parar", command=parar_execucao)
 botao_executar.pack(side="left", padx=5)
 botao_parar.pack(side="left", padx=5)
 
