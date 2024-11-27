@@ -75,9 +75,11 @@ def executar():
     global pilha
     global paused
     global flag_passo_a_passo
+    global old_line
 
     program_instruction_counter = 0
     stack_pointer = -1
+    old_line = -1
     pilha = {}
 
     output_text.config(state=tk.NORMAL)
