@@ -18,14 +18,17 @@ def compilar():
         messagebox.showwarning("Aviso", "Selecione um arquivo primeiro!")
         return
     
+    saida_texto_principal.tag_remove("erro", "1.0", tk.END)
+    
     compilacao = subprocess.run([r"C:\Program Files\CodeBlocks\MinGW\bin\gcc.exe", "-o", "compilador", "compilador.c"])
 
     if compilacao.returncode == 0:
         print("Compilação bem-sucedida!")
     
     try:
+        # Executa o compilador passando o nome do arquivo como argumento
+        resultado = subprocess.run(['./compilador', caminho_arquivo], capture_output=True, text=True, encoding='latin1')
         saida_texto_resultado.config(state=tk.NORMAL)
-        resultado = subprocess.run(['./compilador'], capture_output=True, text=True, encoding='latin1')
         saida_texto_resultado.delete(1.0, tk.END)
         saida_texto_resultado.insert(tk.END, "Saída do Compilador:\n" + resultado.stdout)
         saida_texto_resultado.config(state=tk.DISABLED)
@@ -48,11 +51,33 @@ def salvar_arquivo():
     except Exception as e:
         messagebox.showerror("Erro", f"Ocorreu um erro ao salvar o arquivo: {e}")
 
-
 def atualizar_posicao_cursor(event):
     posicao = saida_texto_principal.index(tk.INSERT)
     linha, coluna = posicao.split('.')
     label_posicao.config(text=f"Linha: {linha}, Coluna: {coluna}")
+
+def destacar_linha_erro(event):
+
+    # Obter a posição do clique no resultado
+    index = saida_texto_resultado.index(f"@{event.x},{event.y}")
+    linha_clicada = int(index.split('.')[0])  # Linha clicada no resultado
+
+    # Pegar o conteúdo da linha clicada
+    conteudo_linha = saida_texto_resultado.get(f"{linha_clicada}.0", f"{linha_clicada}.end")
+
+    # Verificar se a linha tem o prefixo de erro
+    if conteudo_linha.startswith("LINHA") and "[ERRO]" in conteudo_linha:
+        # Extraindo o número da linha com erro
+        try:
+            numero_linha = int(conteudo_linha.split()[1].strip(":"))  # Exemplo: LINHA 3: -> pega 3
+        except ValueError:
+            messagebox.showerror("Erro", "Número de linha inválido no erro.")
+            return
+
+        # Destacar a linha no texto principal
+        saida_texto_principal.tag_remove("erro", "1.0", tk.END)  # Remove destaques antigos
+        saida_texto_principal.tag_add("erro", f"{numero_linha}.0", f"{numero_linha}.end")
+        saida_texto_principal.see(f"{numero_linha}.0")  # Rola até a linha
 
 janela = tk.Tk()
 janela.title("Interface de Compilação")
@@ -69,9 +94,9 @@ frame_superior.pack(side="top", fill="x")
 
 entrada_arquivo = tk.StringVar()
 
-l = tk.Label(frame_superior, text = "Path do arquivo: ")
-l.config(font =("Courier", 14))
-l.pack(side= "left", padx=30, pady= 10)
+l = tk.Label(frame_superior, text="Path do arquivo: ")
+l.config(font=("Courier", 14))
+l.pack(side="left", padx=30, pady=10)
 
 btn_abrir = tk.Button(frame_inferior, text="Abrir Arquivo", command=abrir_arquivo)
 btn_abrir.pack(side="left", padx=10, pady=10)
@@ -95,11 +120,11 @@ saida_texto_resultado = tk.Text(frame_inferior, height=15, width=100)
 saida_texto_resultado.pack(padx=50)
 saida_texto_resultado.config(state=tk.DISABLED)
 
-
-saida_texto_principal.configure( xscrollcommand=scroll_x.set)
+saida_texto_principal.configure(xscrollcommand=scroll_x.set)
+saida_texto_principal.tag_configure("erro", background="yellow", foreground="red")
 
 saida_texto_principal.bind("<KeyRelease>", atualizar_posicao_cursor)
-saida_texto_principal.bind("<ButtonRelease-1>", atualizar_posicao_cursor) 
-
+saida_texto_principal.bind("<ButtonRelease-1>", atualizar_posicao_cursor)
+saida_texto_resultado.bind("<Button-1>", destacar_linha_erro)
 
 janela.mainloop()

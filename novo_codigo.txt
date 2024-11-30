@@ -1,0 +1,20 @@
+programa prtest;
+var x, y, resultado: inteiro;
+
+inicio
+    leia(x);
+    leia(y);
+
+    se x > y entao
+        se (x div 2) * 2 = 10 entao
+            resultado := 1
+        senao
+            resultado := 2
+
+    senao se y > 0 entao
+            resultado := 3
+        senao 
+            resultado := 4;
+
+    escreva(resultado);
+fim.

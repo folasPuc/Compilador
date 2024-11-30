@@ -237,7 +237,7 @@ def AND():
     global stack_pointer
     global pilha
 
-    if (pilha[stack_pointer - 1] == "1") and (pilha[stack_pointer] == "1"):
+    if (str(pilha[stack_pointer - 1]) == "1") and (str(pilha[stack_pointer]) == "1"):
         pilha[stack_pointer - 1] = 1
     else:
         pilha[stack_pointer - 1] = 0
@@ -249,7 +249,7 @@ def OR():
     global stack_pointer
     global pilha
 
-    if (pilha[stack_pointer - 1] == "1") or (pilha[stack_pointer] == "1"):
+    if (str(pilha[stack_pointer - 1]) == "1") or (str(pilha[stack_pointer]) == "1"):
         pilha[stack_pointer - 1] = 1
     else:
         pilha[stack_pointer - 1] = 0
@@ -268,7 +268,7 @@ def CME():
     global stack_pointer
     global pilha
 
-    if pilha[stack_pointer - 1] < pilha[stack_pointer]:
+    if int(pilha[stack_pointer - 1]) < int(pilha[stack_pointer]):
         pilha[stack_pointer - 1] = "1"    
     else:
         pilha[stack_pointer - 1] = "0"
@@ -280,7 +280,7 @@ def CMA():
     global stack_pointer
     global pilha
 
-    if pilha[stack_pointer - 1] > pilha[stack_pointer]:
+    if int(pilha[stack_pointer - 1]) > int(pilha[stack_pointer]):
         pilha[stack_pointer - 1] = "1"    
     else:
         pilha[stack_pointer - 1] = "0"
@@ -292,7 +292,7 @@ def CEQ():
     global stack_pointer
     global pilha
 
-    if pilha[stack_pointer - 1] == pilha[stack_pointer]:
+    if int(pilha[stack_pointer - 1]) == int(pilha[stack_pointer]):
         pilha[stack_pointer - 1] = "1"    
     else:
         pilha[stack_pointer - 1] = "0"
@@ -304,7 +304,7 @@ def CDIF():
     global stack_pointer
     global pilha
 
-    if pilha[stack_pointer - 1] != pilha[stack_pointer]:
+    if int(pilha[stack_pointer - 1]) != int(pilha[stack_pointer]):
         pilha[stack_pointer - 1] = "1"    
     else:
         pilha[stack_pointer - 1] = "0"
@@ -316,7 +316,7 @@ def CMEQ():
     global stack_pointer
     global pilha
 
-    if pilha[stack_pointer - 1] <= pilha[stack_pointer]:
+    if int(pilha[stack_pointer - 1]) <= int(pilha[stack_pointer]):
         pilha[stack_pointer - 1] = "1"    
     else:
         pilha[stack_pointer - 1] = "0"
@@ -328,7 +328,7 @@ def CMAQ():
     global stack_pointer
     global pilha
 
-    if pilha[stack_pointer - 1] >= pilha[stack_pointer]:
+    if int(pilha[stack_pointer - 1]) >= int(pilha[stack_pointer]):
         pilha[stack_pointer - 1] = "1"    
     else:
         pilha[stack_pointer - 1] = "0"
@@ -367,7 +367,7 @@ def JMPF(linha):
     old_line = program_instruction_counter
     linha = int(linha)
 
-    if(pilha[stack_pointer] == "0"):
+    if(str(pilha[stack_pointer]) == "0"):
         program_instruction_counter = linha - 2
     
     del pilha[max(pilha.keys())]
@@ -429,6 +429,7 @@ def RD():
     janela.title("RD - Ler Valor")
 
     tk.Label(janela, text="Digite um valor inteiro:").pack(pady=5)
+    janela.minsize(height= 100, width= 250)
 
     entry = tk.Entry(janela)
     entry.pack(pady=5)
