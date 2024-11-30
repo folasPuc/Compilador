@@ -723,6 +723,7 @@ void gera_expressao(char lista_postfix[50][50]) {
     //LEMBRAR DE COLOCAR O INV, +U E -U SEPARADO
 
     for (int i = 0; i < len_lista_postfix; i++) {
+        printf("\nnPenis: %s", lista_postfix[i]);
 
     if (strcmp(lista_postfix[i], "+") == 0) {
         //gera ADD
@@ -832,6 +833,101 @@ void gera_LDC_LDV(char lista_posfix[50][50]) {
     char auxiliar_str[5];
     for(int i=0; i < len_lista_postfix; i ++){
 
+        if (strcmp(lista_posfix[i], "+") == 0) {
+        //gera ADD
+        Gera("    ", "ADD     ", "    ", "    ");
+
+    }
+
+    
+    if (strcmp(lista_posfix[i], "-") == 0) {
+        //gera SUB
+        Gera("    ", "SUB     ", "    ", "    ");
+
+    }
+
+    
+    if (strcmp(lista_posfix[i], "*") == 0) {
+        //gera MULT
+        Gera("    ", "MULT    ", "    ", "    ");
+
+    }
+
+    
+    if (strcmp(lista_posfix[i], "div") == 0) {
+        //gera DIVI
+        Gera("    ", "DIVI    ", "    ", "    ");
+
+    }
+
+    
+    if (strcmp(lista_posfix[i], "nao") == 0) {
+        //gera NEG
+        Gera("    ", "NEG     ", "    ", "    ");
+
+    }
+
+    
+    if (strcmp(lista_posfix[i], "e") == 0) {
+        //gera AND
+        Gera("    ", "AND     ", "    ", "    ");
+
+    }
+    
+    if (strcmp(lista_posfix[i], "ou") == 0) {
+        //gera OR
+        Gera("    ", "OR      ", "    ", "    ");
+
+    }
+
+    
+    if (strcmp(lista_posfix[i], "<") == 0) {
+        //gera CME
+        Gera("    ", "CME     ", "    ", "    ");
+
+    }
+
+    
+    if (strcmp(lista_posfix[i], ">") == 0) {
+        //gera CMA
+        Gera("    ", "CMA     ", "    ", "    ");
+
+    }
+
+    
+    if (strcmp(lista_posfix[i], "=") == 0) {
+        //gera CEQ
+        Gera("    ", "CEQ     ", "    ", "    ");
+
+    }
+
+    
+    if (strcmp(lista_posfix[i], "!=") == 0) {
+        //gera CDIF
+        Gera("    ", "CDIF    ", "    ", "    ");
+
+    }
+
+    
+    if (strcmp(lista_posfix[i], "<=") == 0) {
+        //gera CMEQ
+        Gera("    ", "CMEQ    ", "    ", "    ");
+
+    }
+
+    
+    if (strcmp(lista_posfix[i], ">=") == 0) {
+        //gera CMAQ
+        Gera("    ", "CMAQ    ", "    ", "    ");
+
+    }
+
+    if (strcmp(lista_posfix[i], "-u") == 0) {
+        //gera INV
+        Gera("    ", "INV     ", "    ", "    ");
+
+    }
+
         if (isalnum(lista_posfix[i][0]) && (strcmp(lista_posfix[i], "ou") != 0 && strcmp(lista_posfix[i], "e") != 0 && strcmp(lista_posfix[i], "nao") != 0 && strcmp(lista_posfix[i], "+u") != 0 && strcmp(lista_posfix[i], "-u") != 0 && strcmp(lista_posfix[i], "div") != 0))
         {
             if(isalpha(lista_posfix[i][0])){
@@ -872,6 +968,10 @@ void gera_LDC_LDV(char lista_posfix[50][50]) {
             }
 
         }
+
+        //colocar aqui
+
+
 
        
     }
@@ -1665,7 +1765,7 @@ void analisa_variaveis()
         }
         else
         {
-            printf("ERRO!: [ Analisa_variaveis ] - diferente de indentificador - Linha:%d TOKEN: %s", line_counter, token.simbolo);
+            printf("ERRO!: [ Analisa_variaveis ] - diferente de indentificador - Linha:%d TOKEN: %s", line_counter, token.lexema);
             exit(0);
         }
 
@@ -2048,7 +2148,7 @@ void analisa_expressao()
         resp =  avaliarPostfix(lista_postfix_global);
         gera_LDC_LDV(lista_postfix_global);
 
-        gera_expressao(lista_postfix_global);
+        
         resetListaInfix();
     }
 }

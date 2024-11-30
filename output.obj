@@ -11,26 +11,34 @@
     STR     4    
     RD              
     STR     5    
+    LDV     7    
+    NEG             
+    JMPF    5       
     CALL    2       
     LDV     0       
     STR     6    
     LDV     6    
     PRN             
-    RETURN          
 5   NULL            
+    RETURN          
+6   NULL            
     ALLOC   8   1   
     RD              
     STR     8    
     LDV     8    
     LDC     10    
     CME             
-    JMPF    6       
+    JMPF    7       
+    LDC     0       
+    STR     7    
+7   NULL            
     CALL    4       
-6   NULL            
     DALLOC  8   1   
     RETURN          
 3   NULL            
-    CALL    5       
+    LDC     1       
+    STR     7    
+    CALL    6       
     LDV     4    
     LDV     5    
     ADD             

@@ -1,5 +1,21 @@
+{ teste procedimentos e funcoes aninhados recursivos OK
+escreva as sucessivas somas de traz para frente   
+8
+8
+12
+8
+7
+-5
+10 
+3
+-9 (FIM)
+saida
+-6
+2
+20}
+
 programa test;
-var a,b,s: inteiro;         
+var a,b,s: inteiro;                 
                               
  funcao soma: inteiro;
  var c,a,s: inteiro;                   
@@ -8,24 +24,31 @@ var a,b,s: inteiro;
   inicio
      leia (c);
      leia (a);
-     s:= soma;                  
-     escreva (s);
+     se nao z
+     entao inicio
+             s:= soma;                  
+             escreva (s);
+           fim
   fim;
   procedimento loop;         
   var x: inteiro;
   inicio
     leia (x);   {para parar digite um valor maior que 9 }
     se x < 10
-    entao ler;               
+    entao z:= falso;
+    ler;               
   fim;
  
  inicio  {corpo da funcao soma}
+  z:= verdadeiro;
   loop;                          
   soma:= c+a;
  fim;                                
-                              
+                                      
+
 inicio      {corpo principal}
   s:= soma;                              
   escreva(s)
 fim.                               
+
 
