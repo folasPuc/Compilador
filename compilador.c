@@ -1,3 +1,7 @@
+/*MATEUS JOSÉ WHITAKER FILIPE 21005080
+JOÃO LUIS BEATO CARDOSO 21012289
+RAFAEL RODRIGUES SATO 21006207*/
+
 // C program to read a file using fgetc()
 // ESTAS SAO AS BIBLIOTECAS
 #include <stdio.h>
@@ -21,14 +25,16 @@ typedef struct Identificador
 
 void limparArquivo() {
     FILE *arquivo = fopen("output.obj", "w"); // Abre o arquivo no modo "w", apagando todo o conteúdo
+    
     if (arquivo == NULL) {
         perror("Erro ao abrir o arquivo");
         return;
     }
-    fclose(arquivo); // Fecha o arquivo para concluir o processo de limpeza
+    
+    fclose(arquivo); // Fecha o arquivo para concluir o processo de limpeza asdasdasd
 }
 
-
+// Função qque faza cada instrução na etap
 void Gera(char* rotulo, char* instrucao, char* atributo_1, char* atributo_2){
     // Abrir arquivo em modo de adição ("append")
     FILE* arquivo = fopen("output.obj", "a");
@@ -82,6 +88,7 @@ Identificador *buscarIdentificador(Identificador *head, const char *nome)
     return NULL; // Se não encontrar, retorna NULL
 }
 
+//funcão que coloca o tipo nas variáveis, percorre a tabela de símbolo procurando pelo tipo "variável" e coloca o tipo correspondente
 void coloca_tipo(Identificador **head, const char *tipo)
 {
     Identificador *atual = *head;
@@ -99,6 +106,7 @@ void coloca_tipo(Identificador **head, const char *tipo)
     }
 }
 
+//Percorre a tabela de símbolos e coloca o tipo em funções e procedimentos
 void coloca_tipo_func(Identificador **head, const char *lexema, const char *tipo)
 {
     Identificador *atual = *head;
@@ -117,6 +125,7 @@ void coloca_tipo_func(Identificador **head, const char *lexema, const char *tipo
     }
 }
 
+//Busca na tabela de símbolo até encontrar a primeira ocorrência do identificador ou até encontrar a marca "L"
 boolean buscaAteMarcaPrimeiraOcorrencia(Identificador **head, const char *lexema)
 {
 
@@ -192,21 +201,23 @@ void analisa_termo();
 void analisa_fator();
 
 
-// tava aqui as variavel
-int line_counter = 1;
-char lista_infix[50][50]; // Agora uma matriz para armazenar até 50 lexemas
-char lista_postfix_global[50][50];
-int listIndex = 0;
-int len_lista_postfix = 0;
-int end_disp_momento = 0;
-int end_var = 1;
-int aloca_var = 1;
-const char* resp;
-FILE *fptr;
-char ch;
-Identificador *tabelaSimbolos = NULL;
-int ROTULO = 1;
 
+int line_counter = 1; //Contador de linhas
+char lista_infix[50][50]; //Matriz para armazenar até 50 lexemas
+char lista_postfix_global[50][50]; //Matriz para armazenar até 50 termos da expressão em formato postfix
+int listIndex = 0; //Index para percorrer a lista postfix
+int len_lista_postfix = 0; //Tamanho da lista postfix
+int end_disp_momento = 0; //Endereço disponível no momento
+int end_var = 1; //Variável utilizada para contar quantas variáveis foram desalocadas, usa para o DALLOC
+int aloca_var = 1; //Variável usada para atribuir o endereço para as variáveis na tabela de símbolos
+const char* resp; //Resposta da analise da lista postfix
+FILE *fptr; //Ponteiro para ler o arquivo
+char ch; //Caractere
+Identificador *tabelaSimbolos = NULL; //Tabela de símbolos
+int ROTULO = 1; //Rótulo
+
+
+//Struct que simboliza um token
 typedef struct
 {
     char lexema[50];
@@ -215,6 +226,7 @@ typedef struct
 
 Token token;
 
+//Função que adiciona termos na lista infix para análisar e fazer a conversão postfix
 void addListaInFix(const char *termo)
 {
     if (listIndex < 50)
@@ -291,7 +303,7 @@ void resetListaInfix()
     }
 
 }
-// PORRA
+
 //  Função para obter a precedência de um operador
 int prec(const char *op)
 {
@@ -302,7 +314,7 @@ int prec(const char *op)
         return 6;
     else if (strcmp(op, "+") == 0 || strcmp(op, "-") == 0)
     { // Precedência menor (soma e subtração)
-        return 5;
+     return 5;
     }
 
     // Precedência de operadores relacionais (todos têm a mesma precedência)
@@ -382,11 +394,12 @@ void infixToPostfix(char lista_infix[50][50])
     for (int i = 0; i < resultIndex; i++)
     {
         strcpy(lista_postfix_global[i], result[i]);
-        printf(lista_postfix_global[i]);
+        //printf(lista_postfix_global[i]);
         len_lista_postfix++;
     }
 }
 
+//Função que avalia a postfix, retorna inteiro ou booleano
 const char* avaliarPostfix(char lista_postfix[50][50])
 {
     char stack[50][50] = {0};
@@ -400,15 +413,15 @@ const char* avaliarPostfix(char lista_postfix[50][50])
     {
 
 
-        // eh um operando, letra ou numero
+        //É um operando, letra ou numero
         if (isalnum(lista_postfix[i][0]) && (strcmp(lista_postfix[i], "ou") != 0 && strcmp(lista_postfix[i], "e") != 0 && strcmp(lista_postfix[i], "nao") != 0 && strcmp(lista_postfix[i], "+u") != 0 && strcmp(lista_postfix[i], "-u") != 0 && strcmp(lista_postfix[i], "div") != 0))
         {
             strcpy(stack[++top], lista_postfix[i]);
         }
-        // eh um operador que vai ter que voltar 2x para verificar os operandos
+        // É um operador, significa que vai ter que voltar 2 vezes para verificar os operandos
         else
         {
-            // volta 2x, tem que ser inteiro + inteiro = inteiro
+            // volta 2 vezes, tem que ser inteiro + inteiro = inteiro
             if (strcmp(lista_postfix[i], "+") == 0 || strcmp(lista_postfix[i], "-") == 0 || strcmp(lista_postfix[i], "div") == 0 || strcmp(lista_postfix[i], "*") == 0)
             {
 
@@ -425,7 +438,6 @@ const char* avaliarPostfix(char lista_postfix[50][50])
                 }
 
                 if (isalpha(num1[0])) {
-                    //tem que buscar na tabela essa merda
                     Identificador *encontrado = buscarIdentificador(tabelaSimbolos, num1);
                     if (encontrado != NULL) {
                         if (strcmp(encontrado->tipo, "inteiro") == 0) {
@@ -443,7 +455,7 @@ const char* avaliarPostfix(char lista_postfix[50][50])
                 }
 
 
-                //para o num2
+                //Analise para o num2
 
                 if (isdigit(num2[0])) {
                     strcpy(tipo2, "inteiro");
@@ -454,7 +466,6 @@ const char* avaliarPostfix(char lista_postfix[50][50])
                 }
 
                 if (isalpha(num2[0])) {
-                    //tem que buscar na tabela essa merda
                     Identificador *encontrado = buscarIdentificador(tabelaSimbolos, num2);
                     if (encontrado != NULL) {
                         if (strcmp(encontrado->tipo, "inteiro") == 0) {
@@ -480,7 +491,7 @@ const char* avaliarPostfix(char lista_postfix[50][50])
 
             }
 
-            // aqui vai voltar 2x, tem que ser inteiro + inteiro = booleano
+            //Inteiro + inteiro = booleano (Relacional)
             if (strcmp(lista_postfix[i], "<") == 0 || strcmp(lista_postfix[i], "<=") == 0 || strcmp(lista_postfix[i], ">") == 0 || strcmp(lista_postfix[i], ">=") == 0 || strcmp(lista_postfix[i], "!=") == 0 || strcmp(lista_postfix[i], "=") == 0)
             {
 
@@ -514,7 +525,7 @@ const char* avaliarPostfix(char lista_postfix[50][50])
                 }
 
 
-                //para o num2
+                //Analise para o num2
 
                 if (isdigit(num2[0])) {
                     strcpy(tipo2, "inteiro");
@@ -525,7 +536,6 @@ const char* avaliarPostfix(char lista_postfix[50][50])
                 }
 
                 if (isalpha(num2[0])) {
-                    //tem que buscar na tabela essa merda
                     Identificador *encontrado = buscarIdentificador(tabelaSimbolos, num2);
                     if (encontrado != NULL) {
                         if (strcmp(encontrado->tipo, "inteiro") == 0) {
@@ -549,7 +559,7 @@ const char* avaliarPostfix(char lista_postfix[50][50])
                 }
 
             }
-
+            //Analise para o "e" e "ou" (Booleano + Booleano = Booleano)
             if (strcmp(lista_postfix[i], "e") == 0 || strcmp(lista_postfix[i], "ou") == 0)
             {
 
@@ -562,7 +572,6 @@ const char* avaliarPostfix(char lista_postfix[50][50])
                 } else {
 
                 if (isalpha(num1[0]) && strcmp(num1, "booleano") != 0) {
-                    //tem que buscar na tabela essa merda
                     Identificador *encontrado = buscarIdentificador(tabelaSimbolos, num1);
                     if (encontrado != NULL) {
                         if (strcmp(encontrado->tipo, "booleano") == 0) {
@@ -582,14 +591,13 @@ const char* avaliarPostfix(char lista_postfix[50][50])
             }
 
 
-                //para o num2
+                //Analise para o num2
 
                 if (strcmp(num2, "booleano") == 0) {
                     strcpy(tipo2, "booleano");
                 } else {
 
                 if (isalpha(num2[0]) && strcmp(num2, "booleano") != 0) {
-                    //tem que buscar na tabela essa merda
                     Identificador *encontrado = buscarIdentificador(tabelaSimbolos, num2);
                     if (encontrado != NULL) {
                         if (strcmp(encontrado->tipo, "booleano") == 0) {
@@ -614,8 +622,8 @@ const char* avaliarPostfix(char lista_postfix[50][50])
                     strcpy(stack[top], "booleano");
                 }
             }
-
-            if (strcmp(lista_postfix[i], "+-u") == 0)
+            //Analisa o sinal +u ou -u
+            if (strcmp(lista_postfix[i], "-u") == 0 || strcmp(lista_postfix[i], "+u") == 0)
             {
                 strcpy(num1, stack[top]);
 
@@ -650,7 +658,7 @@ const char* avaliarPostfix(char lista_postfix[50][50])
                 }
 
             }
-
+            //Analisa o "não"
             if (strcmp(lista_postfix[i], "nao") == 0)
             {
 
@@ -661,7 +669,6 @@ const char* avaliarPostfix(char lista_postfix[50][50])
                 } else {
 
                 if (isalpha(num1[0])) {
-                    //tem que buscar na tabela essa merda
                     Identificador *encontrado = buscarIdentificador(tabelaSimbolos, num1);
                     if (encontrado != NULL) {
                         if (strcmp(encontrado->tipo, "booleano") == 0) {
@@ -682,12 +689,12 @@ const char* avaliarPostfix(char lista_postfix[50][50])
 
                 if (strcmp(tipo1, "booleano") == 0) {
 
-                    //aqui tem que retornar
                 }
             }
         }
     }
 
+    //Verifica se no topo da pilha tem um inteiro booleano
     if (strcmp(stack[top], "inteiro") != 0 && strcmp(stack[top], "booleano") != 0) {
 
         Identificador *encontrado = buscarIdentificador(tabelaSimbolos, stack[top]);
@@ -718,9 +725,8 @@ const char* avaliarPostfix(char lista_postfix[50][50])
     return answ;
 }
 
+//Função que faz a geração de código de uma expressão
 void gera_expressao(char lista_posfix[50][50]) {
-    // VER SER É IDENTIFICADOR E PROCURAR NA TABELE E ACHAR O ENDEREÇO DELE
-    // eh um operando, letra ou numero
 
     char memoria_str[5] = {0};
     char auxiliar_str[5];
@@ -820,11 +826,11 @@ void gera_expressao(char lista_posfix[50][50]) {
         Gera("    ", "INV     ", "    ", "    ");
 
     }
-
         if (isalnum(lista_posfix[i][0]) && (strcmp(lista_posfix[i], "ou") != 0 && strcmp(lista_posfix[i], "e") != 0 && strcmp(lista_posfix[i], "nao") != 0 && strcmp(lista_posfix[i], "+u") != 0 && strcmp(lista_posfix[i], "-u") != 0 && strcmp(lista_posfix[i], "div") != 0))
         {
             if(isalpha(lista_posfix[i][0])){
-
+                
+                //Verifica se é um verdadeiro ou falso para gerar LDC 1 ou 0
                 if(strcmp(lista_posfix[i], "verdadeiro") == 0 || strcmp(lista_posfix[i], "falso") == 0){
 
                     if(strcmp(lista_posfix[i], "verdadeiro") == 0) {
@@ -833,7 +839,7 @@ void gera_expressao(char lista_posfix[50][50]) {
                     }else if(strcmp(lista_posfix[i], "falso") == 0){
                         Gera("    ", "LDC     ", "0   ", "    ");
                     }
-
+                //Significa que é um identificador
                 }else{
 
                     Identificador *encontrado = buscarIdentificador(tabelaSimbolos, lista_posfix[i]);
@@ -853,7 +859,7 @@ void gera_expressao(char lista_posfix[50][50]) {
                     }
                 }
             }
-
+            //Significa que é um número, gera LDC
             if(isdigit(lista_posfix[i][0])){
 
                 snprintf(memoria_str, sizeof(memoria_str), "%s", lista_posfix[i]);
@@ -867,6 +873,7 @@ void gera_expressao(char lista_posfix[50][50]) {
 
 }
 
+//Função que trata espaço e comentários, pulando os espaços e ignorando os comentários
 char tratarEspacoComentario()
 {
     while ((ch == '{' || isspace(ch) || ch == '\t' || ch == '\n') && ch != EOF)
@@ -915,6 +922,7 @@ char tratarEspacoComentario()
     return ch; // Retorna o próximo caractere após o tratamento
 }
 
+//Função que trata o recebimento de dígitos
 void TratarDigito()
 {
     char simbolo[50] = {0};
@@ -932,6 +940,7 @@ void TratarDigito()
     return;
 }
 
+//Função que trata Identificadores e palavras reservadas
 void TratarIdentificador_PalavraReservada()
 {
     char buffer[50] = {0};
@@ -1042,6 +1051,7 @@ void TratarIdentificador_PalavraReservada()
     return;
 }
 
+//Função que trata atribuição
 void TrataAtribuicao()
 {
     char buffer[50] = {0};
@@ -1071,6 +1081,7 @@ void TrataAtribuicao()
     return;
 }
 
+//Função que trata os operadores relacionais
 void TratarOperadorRelacional()
 {
     //!=, <, <=, >, >=, =
@@ -1151,6 +1162,7 @@ void TratarOperadorRelacional()
     return;
 }
 
+//Função que trata pontuação (vírgula, parenteses, ponto-vírgula e ponto)
 void TrataPontuacao()
 {
     char simbolo_pont[50];
@@ -1199,6 +1211,7 @@ void TrataPontuacao()
     return;
 }
 
+//Função que trata os operadores aritméticos
 void trataOperadorAritmetico()
 {
     char simbolo_arit[7];
@@ -1221,6 +1234,7 @@ void trataOperadorAritmetico()
 
     default:
         printf("\n\nERRO AO ATRIBUIR SIMBOLO");
+        exit(0);
     }
 
     ch = fgetc(fptr); // le mais um para deixar o proximo caractere pronto
@@ -1231,6 +1245,7 @@ void trataOperadorAritmetico()
     return;
 }
 
+//Função que lê o próximo token, equivalente ao "Léxico(Token)"
 void AnalisadorLexical()
 {
     // Token* token = (Token*)malloc(sizeof(Token));  // Aloca memória para o token
@@ -1285,20 +1300,15 @@ void AnalisadorLexical()
 
 // Acima são os comentarios do analisador lexical
 
-// Abaixo os procedimentos do sintatioc
+// Abaixo os procedimentos do sintatico
 
+//Função que analisa a chamada de um procedimento
 void analisa_chamada_procedimento(char identificador[50])
 {
-
-    // if (strcmp(token.simbolo, "sponto_virgula") != 0)
-    // {
-    //     printf("ERRO! [ Analisa_chamada_procedimento ]- diferente de ponto e virgula linha:%d", line_counter);
-    // }
 
     Identificador *encontrado = buscarIdentificador(tabelaSimbolos, identificador);
     if (encontrado == NULL)
     {
-        // nao encontrou, da erro
         printf("LINHA %d: [ERRO] procedimento nao declarado", line_counter);
         exit(0);
     }
@@ -1309,9 +1319,9 @@ void analisa_chamada_procedimento(char identificador[50])
     Gera("    ", "CALL    ", char_rotulo, "    ");
 }
 
+//Função que analisa a chamada de função
 void analisa_chamada_funcao()
 {
-    // AnalisadorLexical();
     if (strcmp(token.simbolo, "sidentificador") == 0)
     {
 
@@ -1339,6 +1349,7 @@ void analisa_chamada_funcao()
     }
 }
 
+//Função que analisa o escreva
 void analisa_escreva()
 {
     // Feito
@@ -1352,12 +1363,11 @@ void analisa_escreva()
             Identificador *encontrado = buscarIdentificador(tabelaSimbolos, token.lexema);
             if (encontrado == NULL)
             {
-                // nao encontrou, da erro
                 printf("LINHA %d: [ERRO] Identificador nao declarado", line_counter);
                 exit(0);
             }
 
-            if (strcmp(encontrado->tipo, "inteiro") != 0) { //compara se nao eh penis
+            if (strcmp(encontrado->tipo, "inteiro") != 0) {
                 printf("LINHA %d: [ERRO] Tipo diferente de inteiro", line_counter);
                 exit(0);
             }
@@ -1371,7 +1381,7 @@ void analisa_escreva()
                 printf("LINHA %d: [ERRO] Faltou fecha parenteses", line_counter);
                 exit(0);
             }
-
+            //Gera LDV e PRN
             char encontrado_end[4] = {0};
             snprintf(encontrado_end, sizeof(encontrado_end), "%s", encontrado->memoria);
             Gera("    ", "LDV     ", encontrado_end, "    ");
@@ -1391,6 +1401,7 @@ void analisa_escreva()
 
 }
 
+//Função que analisa o leia
 void analisa_leia()
 {
 
@@ -1405,12 +1416,11 @@ void analisa_leia()
             Identificador *encontrado = buscarIdentificador(tabelaSimbolos, token.lexema);
             if (encontrado == NULL)
             {
-                // nao encontrou, da erro
                 printf("LINHA %d: [ERRO] Identificador nao declarado", line_counter);
                 exit(0);
             }
 
-            if (strcmp(encontrado->tipo, "inteiro") != 0) { //compara se nao eh penis
+            if (strcmp(encontrado->tipo, "inteiro") != 0) {
                 printf("LINHA %d: [ERRO] Tipo diferente de inteiro", line_counter);
                 exit(0);
             }
@@ -1424,6 +1434,8 @@ void analisa_leia()
                 printf("LINHA %d: [ERRO] Diferente de fecha parenteses", line_counter);
                 exit(0);
             }
+
+            //Gera o RD e o STR
 
             Gera("    ", "RD      ", "    ", "    ");
 
@@ -1445,10 +1457,9 @@ void analisa_leia()
     }
 
 
-
-
 }
 
+//Função que analisa atribuição
 void analisa_atribuicao(char identificador[50])
 {
 
@@ -1457,7 +1468,6 @@ void analisa_atribuicao(char identificador[50])
         printf("LINHA %d: [ERRO] Identificador nao declarado", line_counter);
         exit(0);
     }
-    // CONSIDERANDO QUE QUANDO CHEGAR AQUI EU TENHO O TOKEN :=
     AnalisadorLexical();
 
     analisa_expressao();
@@ -1480,6 +1490,7 @@ void analisa_atribuicao(char identificador[50])
         }
     }
 
+    //Gera STR 0, para a função
     if (strcmp(encontrado->tipo, "funcao inteiro") == 0 || strcmp(encontrado->tipo, "funcao booleano") == 0) {
         Gera("    ", "STR     ", "0   ", "    ");
 
@@ -1490,16 +1501,15 @@ void analisa_atribuicao(char identificador[50])
 
     // Converte encontrado->memoria para uma string de 4 caracteres
     snprintf(memoria_str, sizeof(memoria_str), "%s", encontrado->memoria);
-
+    //Gera o STR
     Gera("    ", "STR     ", encontrado->memoria, "    ");
 
     }
 }
 
+//Função que verifica se é uma atribuição ou chamada de procedimento
 void analisa_atrib_chprocedimento()
 {
-    // Feito
-    // CONSIDERANDO QUE TENHO UM SIDENTIFICADOR NO TOKEN
     char auxiliar[50];
     strcpy(auxiliar, token.lexema);
 
@@ -1514,17 +1524,12 @@ void analisa_atrib_chprocedimento()
     }
 }
 
+//Função que analisa comandos simples
 void analisa_comando_simples()
 {
     // Feito
     if (strcmp(token.simbolo, "sidentificador") == 0)
     {
-        // if (buscaAteMarcaPrimeiraOcorrencia(&tabelaSimbolos, token.lexema) == 0)
-        // {
-        //     printf("Erro [analisa comando simples] : identificador nao declarado na linha %d -> [%s]", line_counter, token.lexema);
-        //     exit(0);
-        // }
-
         analisa_atrib_chprocedimento();
     }
 
@@ -1552,6 +1557,7 @@ void analisa_comando_simples()
     }
 }
 
+//Função que analisa comandos
 void analisa_comandos()
 {
     // Feito
@@ -1586,6 +1592,7 @@ void analisa_comandos()
     }
 }
 
+//Função que analisa os tipos das variáveis, tem que ser inteiro ou booleano
 void analisa_tipo()
 {
     // Feito
@@ -1605,6 +1612,7 @@ void analisa_tipo()
     AnalisadorLexical();
 }
 
+//Função que analisa a declaração de variáveis de um mesmo tipo
 void analisa_variaveis()
 {
     int count = 0;
@@ -1675,6 +1683,7 @@ void analisa_variaveis()
     analisa_tipo();
 }
 
+//Analisa a etapa de declaração de variáveis, mesmo tipo ou diferente
 void analisa_et_variaveis()
 {
     // FEITO
@@ -1707,9 +1716,9 @@ void analisa_et_variaveis()
     }
 }
 
+//Função que analisa bloco
 void analisa_bloco()
 {
-    // Feito
     AnalisadorLexical();
     analisa_et_variaveis();
     analisa_subrotinas();
@@ -1718,8 +1727,6 @@ void analisa_bloco()
 
 void analisa_enquanto()
 {
-    // ISSO AQUI FAZ PARTE
-    //  DA GERACAO DE CODIGO !!!!!
     int auxiliar_rotulo_1, auxiliar_rotulo_2;
 
     // Variaveis que pegar o inteiro que viram strings
@@ -1731,14 +1738,12 @@ void analisa_enquanto()
     // Transforma rotulo 1 em string
     auxiliar_rotulo_1 = ROTULO;
     snprintf(rotulo_str, sizeof(rotulo_str), "%-4d", ROTULO);
+    //Gera rótulo
     Gera(rotulo_str, "NULL    ", "    ", "    ");
 
     ROTULO = ROTULO + 1;
-
-
-    // Feito
     AnalisadorLexical();
-    // aqui tem o v
+
     analisa_expressao();
 
     if (strcmp(resp, "booleano") != 0) {
@@ -1749,6 +1754,7 @@ void analisa_enquanto()
     {
         auxiliar_rotulo_2 = ROTULO;
         snprintf(rotulo_str2, sizeof(rotulo_str), "%-4d", ROTULO);
+        //Gera o JMPF
         Gera("    ", "JMPF    ", rotulo_str2, "    ");
 
 
@@ -1757,9 +1763,11 @@ void analisa_enquanto()
         analisa_comando_simples();
 
         snprintf(auxiliar1_str, sizeof(auxiliar1_str), "%-4d", auxiliar_rotulo_1);
+        //Gera o JMP
         Gera("    ", "JMP    ", auxiliar1_str, "    ");
 
         snprintf(auxiliar2_str, sizeof(auxiliar2_str), "%-4d", auxiliar_rotulo_2);
+        //Gera o rótulo
         Gera(auxiliar2_str, "NULL    ", "    ", "    ");
 
     }
@@ -1769,7 +1777,7 @@ void analisa_enquanto()
         exit(0);
     }
 }
-
+//Analisa o comando se 
 void analisa_se()
 {
     // Feito
@@ -1785,6 +1793,7 @@ void analisa_se()
     }
 
     snprintf(rotulo_str, sizeof(rotulo_str), "%-4d", ROTULO);
+    //Gera o JMPF
     Gera("    ", "JMPF    ", rotulo_str, "    ");
         auxiliar1 = ROTULO;
         ROTULO++;
@@ -1798,12 +1807,14 @@ void analisa_se()
         if (strcmp(token.simbolo, "ssenao") == 0)
         {
             snprintf(rotulo_str, sizeof(rotulo_str), "%-4d", ROTULO);
+            //Gera o JMP
             Gera("    ", "JMP     ", rotulo_str, "    ");
 
             auxiliar2 = ROTULO;
             ROTULO++;
 
             snprintf(rotulo_str, sizeof(rotulo_str), "%-4d", auxiliar1);
+            //Gera o rótulo
             Gera(rotulo_str, "NULL    ", "    ", "    ");
 
             auxiliar1 = auxiliar2;
@@ -1815,6 +1826,7 @@ void analisa_se()
          }
 
         snprintf(rotulo_str, sizeof(rotulo_str), "%-4d", auxiliar1);
+        //Gera o rótulo
         Gera(rotulo_str, "NULL    ", "    ", "    ");
 
 
@@ -1824,17 +1836,17 @@ void analisa_se()
     }
 }
 
+//Função que analisa as subrotinas
 void analisa_subrotinas()
 {
     int auxiliar_rotulo = ROTULO, flag = 0;
     char rotulo_str[5] = {0};
 
-
-    // ESSA PARTE É GERAÇAO DE CODIGO !!!!!!!!!
     if((strcmp(token.simbolo, "sprocedimento") == 0) || (strcmp(token.simbolo, "sfuncao") == 0)){
         auxiliar_rotulo = ROTULO;
 
         snprintf(rotulo_str, sizeof(rotulo_str), "%-4d", ROTULO);
+        //Gera o JMP para pular as subrotinas
         Gera("    ", "JMP     ", rotulo_str, "    ");
         ROTULO++;
 
@@ -1848,7 +1860,7 @@ void analisa_subrotinas()
         {
             analisa_declaracao_funcao();
         }
-        else //if (strcmp(token.simbolo, "sprocedimento") == 0)
+        else
         {
             analisa_declaracao_procedimento();
         }
@@ -1864,7 +1876,7 @@ void analisa_subrotinas()
         }
     }
 
-    // ESSA PARTE É GERAÇAO DE CODIGO !!!!!!!!!
+    //Início do procedimento ou função
     if(flag == 1){
 
         snprintf(rotulo_str, sizeof(rotulo_str), "%-4d", auxiliar_rotulo);
@@ -1875,6 +1887,7 @@ void analisa_subrotinas()
 
 }
 
+//Função que analisa a delaração de procedimentos
 void analisa_declaracao_procedimento()
 {
     char rotulo_str[5] = {0};
@@ -1886,17 +1899,15 @@ void analisa_declaracao_procedimento()
         Identificador *encontrado = buscarIdentificador(tabelaSimbolos, token.lexema);
         if (encontrado != NULL)
         {
-            // Encontrou
             printf("LINHA %d: [ERRO] Procedimento ja declarado", line_counter);
             exit(0);
         }
 
-        // ESSA PARTE É GERAÇAO DE CODIGO !!!!!!!!!
 
         snprintf(rotulo_str, sizeof(rotulo_str), "%-4d", ROTULO);
 
         inserirIdentificador(&tabelaSimbolos, token.lexema, nivel, "procedimento", rotulo_str);
-
+        //Gera o rótulo
         Gera(rotulo_str, "NULL    ", "    ", "    ");
 
         ROTULO = ROTULO + 1;
@@ -1921,9 +1932,11 @@ void analisa_declaracao_procedimento()
     // DESEMPILHA
     desempilharAteMarca(&tabelaSimbolos);
 
+    //Se não houver variáveis alocadas, apenas retorna
     if (end_var == 0) {
         Gera("    ", "RETURN  ", "    ", "    ");
     } else {
+        //Gera o DALLOC para desalocar as variáveis e o return
         char quant_desaloc[5] = {0};
         char pos_desaloc[5] = {0};
         snprintf(quant_desaloc, sizeof(quant_desaloc), "%-4d", end_var);
@@ -1935,9 +1948,9 @@ void analisa_declaracao_procedimento()
     }
 }
 
+//Função que analisa a declaração de uma função
 void analisa_declaracao_funcao()
 {
-    // Feito
     AnalisadorLexical();
     char nome_funcao[50];
     char nivel[3] = "L";
@@ -1950,6 +1963,7 @@ void analisa_declaracao_funcao()
             char rotulo [5] = {0};
             snprintf(rotulo, sizeof(rotulo), "%-4d", ROTULO);
             inserirIdentificador(&tabelaSimbolos, token.lexema, nivel, "", rotulo);
+            //Gera o rótulo
             Gera(rotulo, "NULL    ", "    ", "    ");
             ROTULO++;
             strcpy(nome_funcao, token.lexema);
@@ -1998,9 +2012,11 @@ void analisa_declaracao_funcao()
         exit(0);
     }
     desempilharAteMarca(&tabelaSimbolos);
+    //Se não houver variáveis alocadas, apenas gera o return
     if (end_var == 0) {
         Gera("    ", "RETURN  ", "    ", "    ");
     } else {
+        //Gera o DALLOC para desalocar as variáveis e o return
         char quant_desaloc[5] = {0};
         char pos_desaloc[5] = {0};
         snprintf(quant_desaloc, sizeof(quant_desaloc), "%-4d", end_var);
@@ -2013,27 +2029,22 @@ void analisa_declaracao_funcao()
 
 }
 
-// da pra fazer
+//Função que analisa uma expressão
 void analisa_expressao()
 {
-    // feito
 
-    // colocar na lista
-    //  addListaInFix(token.lexema);
 
     analisa_expressao_simples();
     if ((strcmp(token.simbolo, "smaior") == 0) || (strcmp(token.simbolo, "smaiorig") == 0) || (strcmp(token.simbolo, "sig") == 0) || (strcmp(token.simbolo, "smenor") == 0) || (strcmp(token.simbolo, "smenorig") == 0) || (strcmp(token.simbolo, "sdif") == 0))
     {
         addListaInFix(token.lexema);
         AnalisadorLexical();
-        // addListaInFix(token.lexema);
         analisa_expressao_simples();
     }
 
-    // se tirar nao vai funcionar com parenteses estejam avisados
     if (strcmp(token.simbolo, "sfecha_parenteses") != 0)
     {
-        listarListaInfix();
+        //listarListaInfix();
         infixToPostfix(lista_infix);
         resp =  avaliarPostfix(lista_postfix_global);
 
@@ -2042,13 +2053,12 @@ void analisa_expressao()
     }
 }
 
-// da pra fazer
+//Função que analisa uma expressão simples
 void analisa_expressao_simples()
 {
-    // feito
     if ((strcmp(token.simbolo, "smais") == 0) || (strcmp(token.simbolo, "smenos") == 0))
     {
-        // sinal
+
 
         if (strcmp (token.simbolo, "smais") == 0) {
             addListaInFix("+u");
@@ -2057,7 +2067,7 @@ void analisa_expressao_simples()
             addListaInFix("-u");
             AnalisadorLexical();
         }
-        // addListaInFix(token.lexema);
+
     }
 
     analisa_termo();
@@ -2067,29 +2077,22 @@ void analisa_expressao_simples()
 
         addListaInFix(token.lexema);
         AnalisadorLexical();
-
-        // coloca na lista
-        //  addListaInFix(token.lexema);
         analisa_termo();
     }
 }
-
+//Função que analisa o termo
 void analisa_termo()
 {
-    // feito
+
     analisa_fator();
-    // FREITAS, SE VOCE ESTÁ LENDO ISSO SAIBA QUE EU QUASE PULEI DA PONTE NESSE DIA
     while (strcmp(token.simbolo, "smult") == 0 || strcmp(token.simbolo, "sdiv") == 0 || strcmp(token.simbolo, "se") == 0)
     {
         addListaInFix(token.lexema);
         AnalisadorLexical();
-        // coloca na lista
-        //  addListaInFix(token.lexema);
         analisa_fator();
     }
 }
-
-// falata analisa_chamada_funcao (desafio)
+//Função que analisa o fator
 void analisa_fator()
 {
 
@@ -2109,9 +2112,6 @@ void analisa_fator()
             {
                 addListaInFix(token.lexema);
                 AnalisadorLexical();
-                // coloca na lista
-
-                // printf("Token que chega aqui %s", token.lexema);
             }
         }
         else
@@ -2129,21 +2129,18 @@ void analisa_fator()
     {
         addListaInFix(token.lexema);
         AnalisadorLexical();
-        // coloca na lista
         analisa_fator();
     }
     else if (strcmp(token.simbolo, "sabre_parenteses") == 0)
     {
         addListaInFix(token.lexema);
         AnalisadorLexical();
-        // coloca na lista
         analisa_expressao();
 
         if (strcmp(token.simbolo, "sfecha_parenteses") == 0)
         {
             addListaInFix(token.lexema);
             AnalisadorLexical();
-            // coloca na lista
         }
         else
         {
@@ -2155,7 +2152,6 @@ void analisa_fator()
     {
         addListaInFix(token.lexema);
         AnalisadorLexical();
-        // coloca lista
     }
     else
     {
@@ -2166,43 +2162,6 @@ void analisa_fator()
 int main(int argc, char *argv[])
 {
 
-    // Cabeça da lista de identificadores (tabela de símbolos)
-
-    // Exemplo de variáveis a serem inseridas
-    int x = 10;
-    float y = 5.5;
-
-    // Inserir identificadores com escopos (nome do procedimento ou função)
-    // inserirIdentificador(&tabelaSimbolos, "variavelX", "main", "int", &x);
-    // inserirIdentificador(&tabelaSimbolos, "variavelY", "funcaoA", "float", &y);
-
-    // Imprimir a tabela de símbolos
-    // printf("Tabela de Símbolos:\n");
-    // imprimirTabelaSimbolos(tabelaSimbolos);
-
-    // Buscar um identificador na tabela
-    // Identificador* encontrado = buscarIdentificador(tabelaSimbolos, "variavelX");
-    // if (encontrado != NULL) {
-    //     printf("\nIdentificador encontrado:\n");
-    //     printf("Nome: %s, Escopo: %s, Tipo: %s, Endereço: %p\n",
-    //            encontrado->nome, encontrado->escopo, encontrado->tipo, encontrado->memoria);
-    // } else {
-    //     printf("\nIdentificador não encontrado!\n");
-    // }
-
-    // Liberar a memória da tabela de símbolos
-    // liberarTabelaSimbolos(tabelaSimbolos);
-
-    // Abre o arquivo "new 1.txt" com permissão de leitura
-    /*fptr = fopen("CARALHO.txt", "r");
-
-    // Faz a verificação do arquivo de leirura
-    if (NULL == fptr)
-    {
-        printf("file can't be opened \n");
-        return EXIT_FAILURE;
-    }
-    */
     if (argc < 2) {
         return EXIT_FAILURE;
     }
@@ -2213,8 +2172,6 @@ int main(int argc, char *argv[])
     }
 
     ch = fgetc(fptr);
-
-    // Gera("Teste", NULL, "1", "2");
 
     // Lembre de while != EOF
 
@@ -2236,7 +2193,7 @@ int main(int argc, char *argv[])
             int func = 1;
             snprintf(end_string, sizeof(end_string), "%-4d", end_disp_momento);
             snprintf(alocado, sizeof(alocado), "%-4d", func);
-
+            //Gera o START e ALLOC
             Gera("    ", "START   ", "    ", "    ");
 
             Gera("    ", "ALLOC   ", end_string, alocado);
@@ -2257,6 +2214,7 @@ int main(int argc, char *argv[])
                     snprintf(quant_desaloc, sizeof(quant_desaloc), "%-4d", end_var);
                     int result_pos_dalloc = end_disp_momento - end_var;
                     snprintf(pos_desaloc, sizeof(pos_desaloc), "%-4d", result_pos_dalloc);
+                    //Gera o DALLOC para as variáveis globais
                     Gera("    ", "DALLOC  ", pos_desaloc, quant_desaloc);
                     end_disp_momento = result_pos_dalloc;
 
@@ -2264,12 +2222,12 @@ int main(int argc, char *argv[])
                     snprintf(quant_desaloc, sizeof(quant_desaloc), "%-4d", func);
                     result_pos_dalloc = end_disp_momento - func;
                     snprintf(pos_desaloc, sizeof(pos_desaloc), "%-4d", result_pos_dalloc);
-
+                    //Gera o DALLOC para desalocar o espaço reservado para a função
                     Gera("    ", "DALLOC  ", pos_desaloc, quant_desaloc);
                     end_disp_momento = result_pos_dalloc;
 
 
-
+                    //Gera o HLT para encerrar a máquina virtual
                     Gera("    ", "HLT     ", "    ", "    ");
 
                     AnalisadorLexical();
@@ -2309,8 +2267,5 @@ int main(int argc, char *argv[])
     }
 
     liberarTabelaSimbolos(tabelaSimbolos);
-
-    // printf("\nLista Infix: \n");
-    // listarListaInfix();
     return 0;
 }
